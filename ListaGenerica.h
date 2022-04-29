@@ -11,10 +11,14 @@ typedef struct NOG
 {
     void       *Info;
     struct NOG *Prox;
+    struct NOG *Ant;
 }NOG;
 typedef struct
 {
     NOG *Inicio;
+    NOG *Fim;
+    NOG *UltimaConsulta;
+    int IndexUltimaConsulta;
     int NEL;
 }ListaGenerica;
 

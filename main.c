@@ -3,12 +3,12 @@
 
 #include "BDadosCoupe.h"
 /*
-Uma Base de dados Relacional é formada por tabelas,
-onde cada tabela tem as várias colunas (campos)
-e os registos (informação),
-um registo é uma coleção de dados.
+Uma Base de dados Relacional ï¿½ formada por tabelas,
+onde cada tabela tem as vï¿½rias colunas (campos)
+e os registos (informaï¿½ï¿½o),
+um registo ï¿½ uma coleï¿½ï¿½o de dados.
 As tabelas podem ter relacionamentos entre elas
-(mas esta parte será dada nas disciplinas de base de dados do 2ªano do curso).
+(mas esta parte serï¿½ dada nas disciplinas de base de dados do 2ï¿½ano do curso).
 */
 int main()
 {
@@ -18,11 +18,16 @@ int main()
     TABELA *T = Criar_Tabela(BD, "CLIENTES");
     Add_Campo_Tabela(T, "ID", "INT");
     Add_Campo_Tabela(T, "NOME", "STRING");
-    Add_Valores_Tabela(T, "23;Joao");
-    Add_Valores_Tabela_BDados(BD, "CLIENTES", "23;Joao");
+    Add_Campo_Tabela(T, "IDADE", "INT");
+    Add_Valores_Tabela(T, "1;Joao;18");
+    Add_Valores_Tabela(T, "2;Maria;25");
 
+   // Add_Valores_Tabela_BDados(BD, "CLIENTES", "23;Joao;25");
+
+    Mostrar_Tabela(T);
     Mostrar_BDados(BD);
-
+    
+    system("pause");
 
     Destruir_BDados(BD);
     return 0;
