@@ -34,6 +34,11 @@ int AddLG(ListaGenerica *L, void *X)
     NOG *N = (NOG *)malloc(sizeof(NOG));
     N->Info = X;
     N->Prox = L->Inicio;
+    N->Ant = NULL;
+    if (L->Inicio)
+        L->Inicio->Ant = N;
+    else
+        L->Fim = N;
     L->Inicio = N;
     L->NEL++;
 
@@ -48,5 +53,17 @@ void MostrarLG(ListaGenerica *L, void (*fshow)(void *))
     {
         fshow(P->Info);
         P = P->Prox;
+    }
+}
+
+void MostrarRevLG(ListaGenerica *L, void (*fshow)(void *))
+{
+    if (L == NULL) return;
+    if (!L->Fim) return;
+    NOG *P = L->Fim;
+    while (P != NULL)
+    {
+        fshow(P->Info);
+        P = P->Ant;
     }
 }

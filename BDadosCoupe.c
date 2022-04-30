@@ -112,16 +112,16 @@ void Mostra_Valor(void *V)
 
 void Mostrar_Registo(REGISTO *R)
 {
-    MostrarLG(R->LValores, Mostra_Valor);
+    MostrarRevLG(R->LValores, Mostra_Valor);
     printf("\n");
 }
 
 void Mostrar_Tabela(TABELA *T)
 {
     printf("Nome da Tabela: %s\n", T->NOME_TABELA);
-    MostrarLG(T->LCampos, Mostrar_Campo);
+    MostrarRevLG(T->LCampos, Mostrar_Campo);
     printf("\n");
-    MostrarLG(T->LRegistos, Mostrar_Registo);
+    MostrarRevLG(T->LRegistos, Mostrar_Registo);
     printf("\n");
 }
 
