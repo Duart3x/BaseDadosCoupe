@@ -100,9 +100,10 @@ void Mostrar_Tabela_NOME(BDadosCoupe *BD, char *tabela)
 
 }
 
-void Mostrar_Campo(CAMPO *C)
+void Mostrar_Campo(void *C)
 {
-    printf("%s ", C->NOME_CAMPO);
+    CAMPO * c = (CAMPO *)C;
+    printf("%s ", c->NOME_CAMPO);
 }
 
 void Mostra_Valor(void *V)
@@ -110,9 +111,10 @@ void Mostra_Valor(void *V)
     printf("%s ", V);
 }
 
-void Mostrar_Registo(REGISTO *R)
+void Mostrar_Registo(void *R)
 {
-    MostrarRevLG(R->LValores, Mostra_Valor);
+    REGISTO * r = (REGISTO *)R;
+    MostrarRevLG(r->LValores, Mostra_Valor);
     printf("\n");
 }
 
