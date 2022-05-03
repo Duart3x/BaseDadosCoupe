@@ -96,20 +96,13 @@ TABELA *Pesquisar_Tabela(BDadosCoupe *BD, char *nome_tabela)
 
     //TABELA *findedTable;
 
-    ListaGenerica *TableList = BD->LTabelas;
-    NOG *N = TableList->Inicio;
+    NOG *N = BD->LTabelas->Inicio;
     while (N != NULL)
     {
         TABELA *T = (TABELA *)N->Info;
-        if(strcmp(T->NOME_TABELA, nome_tabela) == 0)
-        {
-            /*findedTable = (TABELA *)malloc(sizeof(TABELA));
-            findedTable = T;*/
 
-            free(TableList);
-            free(N);
+        if(strcmp(T->NOME_TABELA, nome_tabela) == 0)
             return T;
-        }
 
         N = N->Prox;
     }
@@ -118,7 +111,9 @@ TABELA *Pesquisar_Tabela(BDadosCoupe *BD, char *nome_tabela)
 //G)	Mostrar uma Tabela
 void Mostrar_Tabela_NOME(BDadosCoupe *BD, char *tabela)
 {
-
+    TABELA *T = Pesquisar_Tabela(BD, tabela);
+    Mostrar_Tabela(T);
+    free(T);
 }
 
 void Mostrar_Campo(void *C)
