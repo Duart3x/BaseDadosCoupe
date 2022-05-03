@@ -151,7 +151,15 @@ void Mostrar_Tabela(TABELA *T)
 //H)	Mostrar toda a base de dados, dever� mostrar todas as Tabelas da BDados.
 void Mostrar_BDados(BDadosCoupe *BD)
 {
-
+    clock_t init = clock();
+    NOG* T = BD->LTabelas->Inicio;
+    while (T)
+    {
+        Mostrar_Tabela(T->Info);
+        printf("\n-----------------------------------------------------\n");
+        T = T->Prox;
+    }
+    
 }
 
 void Destruir_Valor(void *V)
