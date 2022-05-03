@@ -11,7 +11,7 @@ ListaGenerica *CriarLG()
     L->NEL = 0;
     return L;
 }
-void DestuirLG(ListaGenerica *L, void (*func)(void *))
+void DestruirLG(ListaGenerica *L, void (*func)(void *))
 {
     if (!L) return;
     NOG *P = L->Inicio;
@@ -23,10 +23,6 @@ void DestuirLG(ListaGenerica *L, void (*func)(void *))
         free(P);
         P = Aux;
     }
-    if(L->UltimaConsulta)
-        free(L->UltimaConsulta);
-    if(L->Fim)
-        free(L->Fim);
     free(L);
 }
 int AddLG(ListaGenerica *L, void *X)

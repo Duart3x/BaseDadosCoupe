@@ -1,5 +1,6 @@
 
 #include "BDadosCoupe.h"
+#include <time.h>
 
 /** \brief Criar_BDados: A) Criar a Base de dados
  *
@@ -136,11 +137,15 @@ void Mostrar_Registo(void *R)
 
 void Mostrar_Tabela(TABELA *T)
 {
+    clock_t init = clock();
     printf("Nome da Tabela: %s\n", T->NOME_TABELA);
     MostrarRevLG(T->LCampos, Mostrar_Campo);
     printf("\n");
     MostrarRevLG(T->LRegistos, Mostrar_Registo);
     printf("\n");
+    clock_t end = clock();
+    double time = (double)(end - init) / CLOCKS_PER_SEC;
+    printf("Tempo de Execucao: %f\n", time);
 }
 
 //H)	Mostrar toda a base de dados, dever� mostrar todas as Tabelas da BDados.
@@ -148,10 +153,37 @@ void Mostrar_BDados(BDadosCoupe *BD)
 {
 
 }
+
+void Destruir_Valor(void *V)
+{
+    free(V);
+}
+
+void Destruir_Registo(void *R)
+{
+    REGISTO * r = (REGISTO *)R;
+    DestruirLG(r->LValores, Destruir_Valor);
+    free(r);
+}
+
+void Destruir_Campo(void* C)
+{
+    CAMPO * c = (CAMPO *)C;
+    free(c);
+}
+
+void Destruir_Tabela(void* T)
+{
+    TABELA * t = (TABELA *)T;
+    DestruirLG(t->LCampos, Destruir_Campo);
+    DestruirLG(t->LRegistos, Destruir_Registo);
+    free(t);
+}
 //I)	Libertar toda a mem�ria alocada pela base de dados.
 void Destruir_BDados(BDadosCoupe *BD)
 {
-
+    DestruirLG(BD->LTabelas, Destruir_Tabela);
+    free(BD);
 }
 //J)	Mem�ria ocupada por toda a base de dados.
 long int Memoria_BDados(BDadosCoupe *BD)
