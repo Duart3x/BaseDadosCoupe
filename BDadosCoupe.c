@@ -2,6 +2,7 @@
 #include "BDadosCoupe.h"
 #include <time.h>
 #include <string.h>
+#include "utils.h"
 
 /** \brief Criar_BDados: A) Criar a Base de dados
  *
@@ -299,12 +300,42 @@ int Exportar_Tabela_BDados_Excel(BDadosCoupe *BD, char *tabela, char *ficheir_cs
         NR = NR->Prox;
     }
     fclose(f);
+    AtulizaFicheiroBDados(BD,"BDados.csv",T->NOME_TABELA,ficheir_csv);
     return SUCESSO;
 }
 
-int AtulizaFicheiroBDados(BDadosCoupe *BD,char *ficheiro_csv)
+int AtulizaFicheiroBDados(BDadosCoupe *BD,char *ficheiro_csv, char* nomeTabela, char* ficheiroTabela)
 {
-    
+    // Check if file exists
+    FILE *f = fopen(ficheiro_csv, "r");
+    if (!f)
+    {
+        fclose(f);
+        f = fopen(ficheiro_csv, "a");
+        if (!f)
+            return INSUCESSO;
+        
+        fprintf(f, "%s;%s\n", "TABELA", "FICHEIRO");
+        fprintf(f, "%s;%s\n", nomeTabela, ficheiroTabela);
+
+        fclose(f);
+        return SUCESSO;
+    }
+
+    // Check if table exists
+    int nCamposLidos;
+    char **V = Read_Split_Line_File(f,2,&nCamposLidos,";");
+
+    if (strcmp(V[0], nomeTabela) == 0)
+    {
+        fclose(f);
+        return SUCESSO;
+    }
+
+    fprintf(f, "%s;%s\n", nomeTabela, ficheiroTabela);
+    fclose(f);
+
+    return SUCESSO;    
 }
 
 int Exportar_BDados_Excel(BDadosCoupe *BD, char *ficheir_csv)

@@ -57,7 +57,9 @@ void Destruir_BDados(BDadosCoupe *BD);
 //J)	Mem�ria ocupada por toda a base de dados.
 long int Memoria_BDados(BDadosCoupe *BD);
 long int Memoria_Desperdicada_BDados(BDadosCoupe *BD);
+
 //K)	Exportar/Importar para/de Ficheiro (o retorno destas fun��es, permite saber se a fun��o foi bem/mal-executada!):
+int AtulizaFicheiroBDados(BDadosCoupe *BD,char *ficheiro_csv, char* nomeTabela, char* ficheiroTabela);
 int Exportar_Tabela_BDados_Excel(BDadosCoupe *BD, char *tabela, char *ficheir_csv);
 int Exportar_BDados_Excel(BDadosCoupe *BD, char *ficheir_csv);
 int Importar_BDados_Excel(BDadosCoupe *BD, char *ficheir_csv);
