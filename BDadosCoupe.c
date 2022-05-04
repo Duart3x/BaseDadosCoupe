@@ -1,6 +1,8 @@
 
 #include "BDadosCoupe.h"
 #include <time.h>
+#include <malloc.h>
+#include <stdlib.h>
 #include <string.h>
 #include "utils.h"
 
@@ -60,10 +62,9 @@ int Add_Campo_Tabela(TABELA *T, char *nome_campo, char *tipo_campo)
 // D)	Adicionar dados(registos) a uma tabela, os dados s�o dados numa string onde o separador � �;�m ex: Add_Valores_Tabela(T, �123;Joao;965654449�)
 int Add_Valores_Tabela(TABELA *T, char *dados)
 {
-    if (!T)
-        return INSUCESSO;
-
-    char *token = calloc(255, sizeof(char));
+    if(!T) return INSUCESSO;
+    
+    char *token;
     char *delim = ";";
     char *dados_copia = (char *)malloc(sizeof(char) * (strlen(dados) + 5));
 
@@ -174,8 +175,8 @@ void Mostrar_BDados(BDadosCoupe *BD)
 
 void Destruir_Valor(void *V)
 {
-    char *valor = (char *)V;
-    free(valor);
+    /*char* valor = (char*)V;
+    free(valor);*/
 }
 
 void Destruir_Registo(void *R)
@@ -239,7 +240,8 @@ long int Memoria_BDados(BDadosCoupe *BD)
             N4 = R->LValores->Inicio;
             while (N4)
             {
-                memoria += strlen((char *)N4->Info);
+                memoria += strlen((char* )N4->Info);
+                
                 N4 = N4->Prox;
             }
 
@@ -253,7 +255,51 @@ long int Memoria_BDados(BDadosCoupe *BD)
 }
 long int Memoria_Desperdicada_BDados(BDadosCoupe *BD)
 {
-    return -1;
+    long int memoriaExata = 0;
+
+    memoriaExata += sizeof(char) * strlen(BD->NOME_BDADOS);
+    memoriaExata += sizeof(char) * strlen(BD->VERSAO_BDADOS);
+
+    NOG* N = BD->LTabelas->Inicio;
+    NOG* N2 = NULL;
+    NOG* N3 = NULL;
+    NOG* N4 = NULL;
+
+    TABELA* T = NULL;
+    CAMPO* C = NULL;
+    REGISTO * R = NULL;
+    
+    while (N)
+    {
+        T = (TABELA *)N->Info;
+        memoriaExata += sizeof(char) * strlen(T->NOME_TABELA);
+        N2 = T->LCampos->Inicio;
+        while(N2)
+        {
+            C = (CAMPO *)N2->Info;
+            memoriaExata += sizeof(char) * strlen(C->NOME_CAMPO);
+            memoriaExata += sizeof(char) * strlen(C->TIPO);
+            N2 = N2->Prox;
+        }
+
+        N3 = T->LRegistos->Inicio;
+        while(N3)
+        {
+            R = (REGISTO *)N3->Info;
+            N4 = R->LValores->Inicio;
+            while(N4)
+            {
+                memoriaExata += strlen((char* )N4->Info);
+                N4 = N4->Prox;
+            }
+
+            N3 = N3->Prox;
+        }
+
+        N = N->Prox;
+    }
+
+    return Memoria_BDados(BD) - memoriaExata;
 }
 // K)	Exportar/Importar para/de Ficheiro (o retorno destas fun��es, permite saber se a fun��o foi bem/mal-executada!):
 int Exportar_Tabela_BDados_Excel(BDadosCoupe *BD, char *tabela, char *ficheir_csv)
