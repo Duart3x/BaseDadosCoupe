@@ -33,7 +33,7 @@ TABELA *Criar_Tabela(BDadosCoupe *BD, char *nome_tabela)
     strcpy(T->NOME_TABELA, nome_tabela);
     T->LCampos = CriarLG();
     T->LRegistos = CriarLG();
-    AddLG(BD->LTabelas, T);
+    AddFimLG(BD->LTabelas, T);
     return T;
 }
 /** \brief C)  Adicionar um campo a uma tabela.
@@ -53,25 +53,26 @@ int Add_Campo_Tabela(TABELA *T, char *nome_campo, char *tipo_campo)
         return INSUCESSO;
     strcpy(C->NOME_CAMPO, nome_campo);
     strcpy(C->TIPO, tipo_campo);
-    int res = AddLG(T->LCampos, C);
+    int res = AddFimLG(T->LCampos, C);
     return res;
 }
 // D)	Adicionar dados(registos) a uma tabela, os dados s�o dados numa string onde o separador � �;�m ex: Add_Valores_Tabela(T, �123;Joao;965654449�)
 int Add_Valores_Tabela(TABELA *T, char *dados)
 {
-    if(!T) return INSUCESSO;
-    
+    if (!T)
+        return INSUCESSO;
+
     char *token = calloc(255, sizeof(char));
     char *delim = ";";
-    char *dados_copia = (char*)malloc(sizeof(char)* (strlen(dados) + 5));
-  
+    char *dados_copia = (char *)malloc(sizeof(char) * (strlen(dados) + 5));
+
     strcpy(dados_copia, dados);
     token = strtok(dados_copia, delim);
 
     REGISTO *R = (REGISTO *)malloc(sizeof(REGISTO));
     R->LValores = CriarLG();
 
-    AddLG(R->LValores, token);
+    AddFimLG(R->LValores, token);
 
     if (!R)
         return INSUCESSO;
@@ -80,14 +81,13 @@ int Add_Valores_Tabela(TABELA *T, char *dados)
         token = strtok(NULL, delim);
         if (!token)
             break;
-        AddLG(R->LValores, token);
+        AddFimLG(R->LValores, token);
     }
-    
-    AddLG(T->LRegistos, R);
+
+    AddFimLG(T->LRegistos, R);
 
     free(token);
-    //free(dados_copia);
-
+    // free(dados_copia);
 
     return SUCESSO;
 }
@@ -134,14 +134,14 @@ void Mostrar_Campo(void *C)
 
 void Mostra_Valor(void *V)
 {
-    char* valor = (char*)V;
+    char *valor = (char *)V;
     printf("%s ", valor);
 }
 
 void Mostrar_Registo(void *R)
 {
     REGISTO *r = (REGISTO *)R;
-    MostrarRevLG(r->LValores, Mostra_Valor);
+    MostrarLG(r->LValores, Mostra_Valor);
     printf("\n");
 }
 
@@ -149,9 +149,9 @@ void Mostrar_Tabela(TABELA *T)
 {
     clock_t init = clock();
     printf("Nome da Tabela: %s\n", T->NOME_TABELA);
-    MostrarRevLG(T->LCampos, Mostrar_Campo);
+    MostrarLG(T->LCampos, Mostrar_Campo);
     printf("\n");
-    MostrarRevLG(T->LRegistos, Mostrar_Registo);
+    MostrarLG(T->LRegistos, Mostrar_Registo);
     printf("\n");
     clock_t end = clock();
     double time = (double)(end - init) / CLOCKS_PER_SEC;
@@ -173,7 +173,7 @@ void Mostrar_BDados(BDadosCoupe *BD)
 
 void Destruir_Valor(void *V)
 {
-    char* valor = (char*)V;
+    char *valor = (char *)V;
     free(valor);
 }
 
@@ -209,21 +209,21 @@ long int Memoria_BDados(BDadosCoupe *BD)
     long int memoria = 0;
     memoria += sizeof(BD->NOME_BDADOS);
     memoria += sizeof(BD->VERSAO_BDADOS);
-    NOG* N = BD->LTabelas->Inicio;
-    NOG* N2 = NULL;
-    NOG* N3 = NULL;
-    NOG* N4 = NULL;
+    NOG *N = BD->LTabelas->Inicio;
+    NOG *N2 = NULL;
+    NOG *N3 = NULL;
+    NOG *N4 = NULL;
 
-    TABELA* T = NULL;
-    CAMPO* C = NULL;
-    REGISTO * R = NULL;
-    
+    TABELA *T = NULL;
+    CAMPO *C = NULL;
+    REGISTO *R = NULL;
+
     while (N)
     {
         T = (TABELA *)N->Info;
         memoria += sizeof(T->NOME_TABELA);
         N2 = T->LCampos->Inicio;
-        while(N2)
+        while (N2)
         {
             C = (CAMPO *)N2->Info;
             memoria += sizeof(C->NOME_CAMPO);
@@ -232,13 +232,13 @@ long int Memoria_BDados(BDadosCoupe *BD)
         }
 
         N3 = T->LRegistos->Inicio;
-        while(N3)
+        while (N3)
         {
             R = (REGISTO *)N3->Info;
             N4 = R->LValores->Inicio;
-            while(N4)
+            while (N4)
             {
-                memoria += strlen((char* )N4->Info);
+                memoria += strlen((char *)N4->Info);
                 N4 = N4->Prox;
             }
 
@@ -261,37 +261,52 @@ int Exportar_Tabela_BDados_Excel(BDadosCoupe *BD, char *tabela, char *ficheir_cs
     TABELA *T = Pesquisar_Tabela(BD, tabela);
     if (!T)
         return INSUCESSO;
-    char *file = (char *)malloc(sizeof(char) * strlen(ficheir_csv));
-    strcpy(file, ficheir_csv);
-    FILE *f = fopen(file, "w");
+    FILE *f = fopen(ficheir_csv, "w");
     if (!f)
         return INSUCESSO;
-    NOG *N = T->LCampos->Inicio;
-    fprintf(f, "%s;%s", BD->NOME_BDADOS,BD->VERSAO_BDADOS);
-    while (N)
+    NOG *NC = T->LCampos->Inicio;
+    NOG *NR = NULL;
+    NOG *NV = NULL;
+
+    NC = T->LCampos->Inicio;
+    while (NC)
     {
-        fprintf(f, "%s;", T->NOME_TABELA);
-        N = T->LCampos->Inicio;
-    while (N)
-    {
-        CAMPO *C = (CAMPO *)N->Info;
-        fprintf(f, "%s;", C->NOME_CAMPO);
-        N = N->Prox;
+        CAMPO *C = (CAMPO *)NC->Info;
+        
+        if(NC->Prox != NULL)
+            fprintf(f, "%s;", C->NOME_CAMPO);
+        else
+            fprintf(f, "%s", C->NOME_CAMPO);
+        NC = NC->Prox;
     }
     fprintf(f, "\n");
-    N = T->LRegistos->Inicio;
-    while (N)
+    NR = T->LRegistos->Inicio;
+    while (NR)
     {
-        REGISTO *R = (REGISTO *)N->Info;
-        MostrarRevLG(R->LValores, fprintf(f, "%s;", R->LValores->Inicio->Info));
+        REGISTO *R = (REGISTO *)NR->Info;
+        NV = R->LValores->Inicio;
+        while (NV)
+        {
+
+            if(NV->Prox != NULL)
+                fprintf(f, "%s;", NV->Info);
+            else
+                fprintf(f, "%s", NV->Info);
+            NV = NV->Prox;
+        }
         fprintf(f, "\n");
-        N = N->Prox;
-    }
-    N = N->Prox;
+        
+        NR = NR->Prox;
     }
     fclose(f);
     return SUCESSO;
 }
+
+int AtulizaFicheiroBDados(BDadosCoupe *BD,char *ficheiro_csv)
+{
+    
+}
+
 int Exportar_BDados_Excel(BDadosCoupe *BD, char *ficheir_csv)
 {
     return SUCESSO;
@@ -311,7 +326,6 @@ int Importar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *fich_dat)
 // L)	Apagar o conte�do de uma Tabela. A Tabela continua a existir na BDados, mas n�o cont�m os dados, ou seja, os campos continuam, mas os registos s�o eliminados.
 int DELETE_TABLE_DATA(TABELA *T)
 {
-    TABELA *T = malloc(sizeof(TABELA));
     if (!T)
         return INSUCESSO;
     DestruirLG(T->LRegistos, Destruir_Registo);
@@ -327,8 +341,8 @@ int DROP_TABLE(BDadosCoupe *BD, char *nome_tabela)
         TABELA *T = (TABELA *)N->Info;
         if (strcmp(T->NOME_TABELA, nome_tabela) == 0)
         {
-            destruir_LG(T->LCampos, Destruir_Campo);
-            destruir_LG(T->LRegistos, Destruir_Registo);
+            DestruirLG(T->LCampos, Destruir_Campo);
+            DestruirLG(T->LRegistos, Destruir_Registo);
             free(N);
             return SUCESSO;
         }
