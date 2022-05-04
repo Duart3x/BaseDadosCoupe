@@ -22,7 +22,7 @@ int main()
         char *dados = (char *)malloc(sizeof(char) * 100);
         int idade;
         int a = 0;
-        for (size_t i = 1; i < 50000; i++)
+        for (size_t i = 1; i < 10; i++)
         {
 
             sprintf(nomeUtilizador, "Utilizador_%d", i);
@@ -42,14 +42,15 @@ int main()
         free(dados);
         // Add_Valores_Tabela_BDados(BD, "CLIENTES", "23;Joao;25");
 
-        //Mostrar_Tabela(T);
+        Mostrar_Tabela(T);
+        Exportar_Tabela_BDados_Excel(BD,"CLIENTES","clientes.csv");
         // Mostrar_BDados(BD);
 
         long int memoria = Memoria_BDados(BD);
 
         printf("Memoria ocupada: %ld bytes\n", memoria);
 
-        Destruir_BDados(BD);
+       // Destruir_BDados(BD);
 
         system("pause");
     }

@@ -40,6 +40,27 @@ int AddLG(ListaGenerica *L, void *X)
 
     return SUCESSO;
 }
+
+int AddFimLG(ListaGenerica *L, void *X)
+{
+    NOG *N = (NOG *)malloc(sizeof(NOG));
+    N->Info = X;
+    N->Prox = NULL;
+    
+    N->Ant = L->Fim;
+
+    if(L->Fim)
+        L->Fim->Prox = N;
+
+    if(L->Inicio == NULL)
+        L->Inicio = N;
+
+    L->Fim = N;
+    L->NEL++;
+
+    return SUCESSO;
+}
+
 void MostrarLG(ListaGenerica *L, void (*fshow)(void *))
 {
     if (L == NULL) return;
