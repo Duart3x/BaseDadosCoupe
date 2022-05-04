@@ -300,7 +300,10 @@ int Exportar_Tabela_BDados_Excel(BDadosCoupe *BD, char *tabela, char *ficheir_cs
         NR = NR->Prox;
     }
     fclose(f);
-    AtulizaFicheiroBDados(BD,"BDados.csv",T->NOME_TABELA,ficheir_csv);
+    char* ficheiroBaseDados = malloc(sizeof(char)*(strlen(BD->NOME_BDADOS)+6));
+    sprintf(ficheiroBaseDados, "%s.csv", BD->NOME_BDADOS);
+
+    AtulizaFicheiroBDados(BD,ficheiroBaseDados,T->NOME_TABELA,ficheir_csv);
     return SUCESSO;
 }
 
@@ -321,29 +324,104 @@ int AtulizaFicheiroBDados(BDadosCoupe *BD,char *ficheiro_csv, char* nomeTabela, 
         fclose(f);
         return SUCESSO;
     }
-
+    
     // Check if table exists
     int nCamposLidos;
-    char **V = Read_Split_Line_File(f,2,&nCamposLidos,";");
-
-    if (strcmp(V[0], nomeTabela) == 0)
+    while (!feof(f))
     {
-        fclose(f);
-        return SUCESSO;
-    }
+        char **V = Read_Split_Line_File(f,2,&nCamposLidos,";");
+        if(!V)
+            continue;
 
+        if (strcmp(V[0], nomeTabela) == 0)
+        {
+            fclose(f);
+            return SUCESSO;
+        }
+
+    }
+    fclose(f);
+    f = fopen(ficheiro_csv, "a");
+    if (!f)
+        return INSUCESSO;
+    
     fprintf(f, "%s;%s\n", nomeTabela, ficheiroTabela);
     fclose(f);
 
     return SUCESSO;    
 }
 
-int Exportar_BDados_Excel(BDadosCoupe *BD, char *ficheir_csv)
+int Exportar_BDados_Excel(BDadosCoupe *BD)
 {
+    NOG* NT = BD->LTabelas->Inicio;
+
+    char* ficheiroTabelas = malloc(sizeof(char)*250);
+
+    while (NT)
+    {
+        TABELA *T = (TABELA *)NT->Info;
+        sprintf(ficheiroTabelas, "%s.csv", T->NOME_TABELA);
+        Exportar_Tabela_BDados_Excel(BD, T->NOME_TABELA, ficheiroTabelas);
+        NT = NT->Prox;
+    }
+
     return SUCESSO;
 }
+
+//TODO: IMPORTAR TABELA
+int ImportarTabelaBDados(BDadosCoupe *BD, char *ficheiro_csv, char *nomeTabela)
+{
+    // Check if file exists
+    FILE *f = fopen(ficheiro_csv, "r");
+    if (!f)
+    {
+        fclose(f);
+        return INSUCESSO;
+    }
+    
+    TABELA* T = malloc(sizeof(TABELA));
+
+    // Check if table exists
+    int nCamposLidos;
+    while (!feof(f))
+    {
+        char **V = Read_Split_Line_File(f,2,&nCamposLidos,";");
+        if(!V)
+            continue;
+        
+    }
+    fclose(f);
+    return INSUCESSO;
+}
+
+//TODO: ACABAR ESTA PORRA
 int Importar_BDados_Excel(BDadosCoupe *BD, char *ficheir_csv)
 {
+    FILE* f = fopen(ficheir_csv, "r");
+    if (!f)
+        return INSUCESSO;
+
+    int nCamposLidos;
+    while (!feof(f))
+    {
+        char** V = Read_Split_Line_File(f,2,&nCamposLidos,";");
+        if(!V)
+            continue;
+        
+        if (strcmp(V[0], "TABELA") == 0)
+            continue;
+        
+        FILE* ft = fopen(V[1], "r");
+        
+        if (!ft)
+        {
+            fclose(f);
+            fclose(ft);
+            return INSUCESSO;
+        }
+
+    }
+    
     return SUCESSO;
 }
 int Exportar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *fich_dat)

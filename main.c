@@ -15,7 +15,17 @@ int main()
         Add_Campo_Tabela(T, "ID", "INT");
         Add_Campo_Tabela(T, "NOME", "STRING");
         Add_Campo_Tabela(T, "IDADE", "INT");
-        // Add_Valores_Tabela(T, "1;Joao;18");
+
+        TABELA *T2 = Criar_Tabela(BD, "PRODUTOS");
+        Add_Campo_Tabela(T2, "ID", "INT");
+        Add_Campo_Tabela(T2, "NOME", "STRING");
+        Add_Campo_Tabela(T2, "PRECO", "FLOAT");
+        Add_Campo_Tabela(T2, "QUANTIDADE", "INT");
+
+        Add_Valores_Tabela(T2, "1;agua;20;100");
+        Add_Valores_Tabela(T2, "2;coca-cola;10;200");
+        Add_Valores_Tabela(T2, "3;creatina;15;500");
+
         // Add_Valores_Tabela(T, "2;Maria;25");
         time_t init = clock();
         char *nomeUtilizador = (char *)malloc(sizeof(char) * 20);
@@ -43,7 +53,11 @@ int main()
         // Add_Valores_Tabela_BDados(BD, "CLIENTES", "23;Joao;25");
 
         Mostrar_Tabela(T);
-        Exportar_Tabela_BDados_Excel(BD,"CLIENTES","clientes.csv");
+        // Exportar_Tabela_BDados_Excel(BD,"CLIENTES","clientes.csv");
+        // Exportar_Tabela_BDados_Excel(BD,"PRODUTOS","produtos.csv");
+
+        Exportar_BDados_Excel(BD);
+
         // Mostrar_BDados(BD);
 
         long int memoria = Memoria_BDados(BD);
