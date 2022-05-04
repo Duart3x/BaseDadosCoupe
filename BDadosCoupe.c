@@ -49,13 +49,14 @@ TABELA *Criar_Tabela(BDadosCoupe *BD, char *nome_tabela)
 int Add_Campo_Tabela(TABELA *T, char *nome_campo, char *tipo_campo)
 {
     CAMPO *C = (CAMPO *)malloc(sizeof(CAMPO));
-    if (!C) return INSUCESSO;
+    if (!C)
+        return INSUCESSO;
     strcpy(C->NOME_CAMPO, nome_campo);
     strcpy(C->TIPO, tipo_campo);
     int res = AddLG(T->LCampos, C);
     return res;
 }
-//D)	Adicionar dados(registos) a uma tabela, os dados s�o dados numa string onde o separador � �;�m ex: Add_Valores_Tabela(T, �123;Joao;965654449�)
+// D)	Adicionar dados(registos) a uma tabela, os dados s�o dados numa string onde o separador � �;�m ex: Add_Valores_Tabela(T, �123;Joao;965654449�)
 int Add_Valores_Tabela(TABELA *T, char *dados)
 {
     if(!T) return INSUCESSO;
@@ -71,12 +72,13 @@ int Add_Valores_Tabela(TABELA *T, char *dados)
     R->LValores = CriarLG();
 
     AddLG(R->LValores, token);
-    
-    if(!R) return INSUCESSO;
-    while(token)
+
+    if (!R)
+        return INSUCESSO;
+    while (token)
     {
         token = strtok(NULL, delim);
-        if(!token)
+        if (!token)
             break;
         AddLG(R->LValores, token);
     }
@@ -89,33 +91,34 @@ int Add_Valores_Tabela(TABELA *T, char *dados)
 
     return SUCESSO;
 }
-//E)	Adicionar dados(registos) a uma tabela, os dados s�o dados numa string onde o separador � �;�
+// E)	Adicionar dados(registos) a uma tabela, os dados s�o dados numa string onde o separador � �;�
 int Add_Valores_Tabela_BDados(BDadosCoupe *BD, char *nome_tabela, char *dados)
 {
     TABELA *T = Pesquisar_Tabela(BD, nome_tabela);
     int res = Add_Valores_Tabela(T, dados);
     return res;
 }
-//F)	Pesquisar uma Tabela da base de dados
+// F)	Pesquisar uma Tabela da base de dados
 TABELA *Pesquisar_Tabela(BDadosCoupe *BD, char *nome_tabela)
 {
-    if (BD == NULL) return INSUCESSO;
+    if (BD == NULL)
+        return INSUCESSO;
 
-    //TABELA *findedTable;
+    // TABELA *findedTable;
 
     NOG *N = BD->LTabelas->Inicio;
     while (N != NULL)
     {
         TABELA *T = (TABELA *)N->Info;
 
-        if(strcmp(T->NOME_TABELA, nome_tabela) == 0)
+        if (strcmp(T->NOME_TABELA, nome_tabela) == 0)
             return T;
 
         N = N->Prox;
     }
     return INSUCESSO;
 }
-//G)	Mostrar uma Tabela
+// G)	Mostrar uma Tabela
 void Mostrar_Tabela_NOME(BDadosCoupe *BD, char *tabela)
 {
     TABELA *T = Pesquisar_Tabela(BD, tabela);
@@ -125,7 +128,7 @@ void Mostrar_Tabela_NOME(BDadosCoupe *BD, char *tabela)
 
 void Mostrar_Campo(void *C)
 {
-    CAMPO * c = (CAMPO *)C;
+    CAMPO *c = (CAMPO *)C;
     printf("%s ", c->NOME_CAMPO);
 }
 
@@ -137,7 +140,7 @@ void Mostra_Valor(void *V)
 
 void Mostrar_Registo(void *R)
 {
-    REGISTO * r = (REGISTO *)R;
+    REGISTO *r = (REGISTO *)R;
     MostrarRevLG(r->LValores, Mostra_Valor);
     printf("\n");
 }
@@ -155,18 +158,17 @@ void Mostrar_Tabela(TABELA *T)
     printf("Tempo de Execucao: %f\n", time);
 }
 
-//H)	Mostrar toda a base de dados, dever� mostrar todas as Tabelas da BDados.
+// H)	Mostrar toda a base de dados, dever� mostrar todas as Tabelas da BDados.
 void Mostrar_BDados(BDadosCoupe *BD)
 {
     clock_t init = clock();
-    NOG* T = BD->LTabelas->Inicio;
+    NOG *T = BD->LTabelas->Inicio;
     while (T)
     {
         Mostrar_Tabela(T->Info);
         printf("\n-----------------------------------------------------\n");
         T = T->Prox;
     }
-    
 }
 
 void Destruir_Valor(void *V)
@@ -177,40 +179,31 @@ void Destruir_Valor(void *V)
 
 void Destruir_Registo(void *R)
 {
-    REGISTO * r = (REGISTO *)R;
-    NOG* N = r->LValores->Inicio;
-    while (N)
-    {
-        char* valor = N->Info;
-        free(valor);
-        N = N->Prox;
-    }
-    printf("\n");
-    //DestruirLG(r->LValores, Destruir_Valor);
+    REGISTO *r = (REGISTO *)R;
+    DestruirLG(r->LValores, Destruir_Valor);
     free(r);
 }
 
-void Destruir_Campo(void* C)
+void Destruir_Campo(void *C)
 {
-    CAMPO * c = (CAMPO *)C;
+    CAMPO *c = (CAMPO *)C;
     free(c);
 }
 
-void Destruir_Tabela(void* T)
+void Destruir_Tabela(void *T)
 {
-    TABELA * t = (TABELA *)T;
+    TABELA *t = (TABELA *)T;
     DestruirLG(t->LCampos, Destruir_Campo);
     DestruirLG(t->LRegistos, Destruir_Registo);
     free(t);
 }
-//I)	Libertar toda a mem�ria alocada pela base de dados.
+// I)	Libertar toda a mem�ria alocada pela base de dados.
 void Destruir_BDados(BDadosCoupe *BD)
 {
     DestruirLG(BD->LTabelas, Destruir_Tabela);
     free(BD);
 }
-
-//J)	Mem�ria ocupada por toda a base de dados.
+// J)	Mem�ria ocupada por toda a base de dados.
 long int Memoria_BDados(BDadosCoupe *BD)
 {
     long int memoria = 0;
@@ -261,9 +254,42 @@ long int Memoria_Desperdicada_BDados(BDadosCoupe *BD)
 {
     return -1;
 }
-//K)	Exportar/Importar para/de Ficheiro (o retorno destas fun��es, permite saber se a fun��o foi bem/mal-executada!):
+// K)	Exportar/Importar para/de Ficheiro (o retorno destas fun��es, permite saber se a fun��o foi bem/mal-executada!):
 int Exportar_Tabela_BDados_Excel(BDadosCoupe *BD, char *tabela, char *ficheir_csv)
 {
+    // export listaGenerica to excel file
+    TABELA *T = Pesquisar_Tabela(BD, tabela);
+    if (!T)
+        return INSUCESSO;
+    char *file = (char *)malloc(sizeof(char) * strlen(ficheir_csv));
+    strcpy(file, ficheir_csv);
+    FILE *f = fopen(file, "w");
+    if (!f)
+        return INSUCESSO;
+    NOG *N = T->LCampos->Inicio;
+    fprintf(f, "%s;%s", BD->NOME_BDADOS,BD->VERSAO_BDADOS);
+    while (N)
+    {
+        fprintf(f, "%s;", T->NOME_TABELA);
+        N = T->LCampos->Inicio;
+    while (N)
+    {
+        CAMPO *C = (CAMPO *)N->Info;
+        fprintf(f, "%s;", C->NOME_CAMPO);
+        N = N->Prox;
+    }
+    fprintf(f, "\n");
+    N = T->LRegistos->Inicio;
+    while (N)
+    {
+        REGISTO *R = (REGISTO *)N->Info;
+        MostrarRevLG(R->LValores, fprintf(f, "%s;", R->LValores->Inicio->Info));
+        fprintf(f, "\n");
+        N = N->Prox;
+    }
+    N = N->Prox;
+    }
+    fclose(f);
     return SUCESSO;
 }
 int Exportar_BDados_Excel(BDadosCoupe *BD, char *ficheir_csv)
@@ -282,29 +308,46 @@ int Importar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *fich_dat)
 {
     return SUCESSO;
 }
-//L)	Apagar o conte�do de uma Tabela. A Tabela continua a existir na BDados, mas n�o cont�m os dados, ou seja, os campos continuam, mas os registos s�o eliminados.
+// L)	Apagar o conte�do de uma Tabela. A Tabela continua a existir na BDados, mas n�o cont�m os dados, ou seja, os campos continuam, mas os registos s�o eliminados.
 int DELETE_TABLE_DATA(TABELA *T)
 {
+    TABELA *T = malloc(sizeof(TABELA));
+    if (!T)
+        return INSUCESSO;
+    DestruirLG(T->LRegistos, Destruir_Registo);
+    free(T);
     return SUCESSO;
 }
-//M)	Apagar o conte�do de uma Tabela e remove a tabela da base de dados.
+// M)	Apagar o conte�do de uma Tabela e remove a tabela da base de dados.
 int DROP_TABLE(BDadosCoupe *BD, char *nome_tabela)
 {
-    return SUCESSO;
+    NOG *N = BD->LTabelas->Inicio;
+    while (N != NULL)
+    {
+        TABELA *T = (TABELA *)N->Info;
+        if (strcmp(T->NOME_TABELA, nome_tabela) == 0)
+        {
+            destruir_LG(T->LCampos, Destruir_Campo);
+            destruir_LG(T->LRegistos, Destruir_Registo);
+            free(N);
+            return SUCESSO;
+        }
+        N = N->Prox;
+    }
+    return INSUCESSO;
 }
-//N)	Selecionar (Apresentar no ecran!) da base de dados todos os registos que obede�am a uma dada condi��o, a fun��o deve retornar o n�mero de registos selecionados. (Ter em aten��o o exemplo das aulas te�ricas!). Nota: esta � certamente a funcionalidade mais usada num sistema de base de dados�, por isso se estiver bem otimizada�. O utilizador agradece!!!!
+// N)	Selecionar (Apresentar no ecran!) da base de dados todos os registos que obede�am a uma dada condi��o, a fun��o deve retornar o n�mero de registos selecionados. (Ter em aten��o o exemplo das aulas te�ricas!). Nota: esta � certamente a funcionalidade mais usada num sistema de base de dados�, por isso se estiver bem otimizada�. O utilizador agradece!!!!
 int SELECT(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), char *nome_campo, char *valor_comparacao)
 {
     return SUCESSO;
 }
-//O)	Remover todos os registos que obede�am a uma dada condi��o, a fun��o deve retornar o n�mero de registos removidos.
+// O)	Remover todos os registos que obede�am a uma dada condi��o, a fun��o deve retornar o n�mero de registos removidos.
 int DELETE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), char *nome_campo, char *valor_comparacao)
 {
     return SUCESSO;
 }
-//P)	Atualizar todos os registos da tabela onde o Campo � dado, que obede�am a uma dada condi��o, a fun��o deve retornar o n�mero de registos que foram atualizados.
+// P)	Atualizar todos os registos da tabela onde o Campo � dado, que obede�am a uma dada condi��o, a fun��o deve retornar o n�mero de registos que foram atualizados.
 int UPDATE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), char *campo_comp, char *valor_campo_comp, char *nome_campo_update, char *valor_campo_update)
 {
     return SUCESSO;
 }
-
