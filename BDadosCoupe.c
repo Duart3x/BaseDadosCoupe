@@ -1,6 +1,7 @@
 
 #include "BDadosCoupe.h"
 #include <time.h>
+#include <string.h>
 
 /** \brief Criar_BDados: A) Criar a Base de dados
  *
@@ -59,15 +60,16 @@ int Add_Valores_Tabela(TABELA *T, char *dados)
 {
     if(!T) return INSUCESSO;
     
-    char *token;
+    char *token = calloc(255, sizeof(char));
     char *delim = ";";
-    char *dados_copia = (char *)malloc(sizeof(char) * strlen(dados));
+    char *dados_copia = (char*)malloc(sizeof(char)* (strlen(dados) + 5));
+  
     strcpy(dados_copia, dados);
     token = strtok(dados_copia, delim);
 
     REGISTO *R = (REGISTO *)malloc(sizeof(REGISTO));
     R->LValores = CriarLG();
-    
+
     AddLG(R->LValores, token);
     
     if(!R) return INSUCESSO;
@@ -78,8 +80,12 @@ int Add_Valores_Tabela(TABELA *T, char *dados)
             break;
         AddLG(R->LValores, token);
     }
-
+    
     AddLG(T->LRegistos, R);
+
+    free(token);
+    //free(dados_copia);
+
 
     return SUCESSO;
 }
@@ -125,7 +131,8 @@ void Mostrar_Campo(void *C)
 
 void Mostra_Valor(void *V)
 {
-    printf("%s ", V);
+    char* valor = (char*)V;
+    printf("%s ", valor);
 }
 
 void Mostrar_Registo(void *R)
@@ -164,13 +171,22 @@ void Mostrar_BDados(BDadosCoupe *BD)
 
 void Destruir_Valor(void *V)
 {
-    free(V);
+    char* valor = (char*)V;
+    free(valor);
 }
 
 void Destruir_Registo(void *R)
 {
     REGISTO * r = (REGISTO *)R;
-    DestruirLG(r->LValores, Destruir_Valor);
+    NOG* N = r->LValores->Inicio;
+    while (N)
+    {
+        char* valor = N->Info;
+        free(valor);
+        N = N->Prox;
+    }
+    printf("\n");
+    //DestruirLG(r->LValores, Destruir_Valor);
     free(r);
 }
 
@@ -193,10 +209,53 @@ void Destruir_BDados(BDadosCoupe *BD)
     DestruirLG(BD->LTabelas, Destruir_Tabela);
     free(BD);
 }
+
 //J)	Mem�ria ocupada por toda a base de dados.
 long int Memoria_BDados(BDadosCoupe *BD)
 {
-    return -1;
+    long int memoria = 0;
+    memoria += sizeof(BD->NOME_BDADOS);
+    memoria += sizeof(BD->VERSAO_BDADOS);
+    NOG* N = BD->LTabelas->Inicio;
+    NOG* N2 = NULL;
+    NOG* N3 = NULL;
+    NOG* N4 = NULL;
+
+    TABELA* T = NULL;
+    CAMPO* C = NULL;
+    REGISTO * R = NULL;
+    
+    while (N)
+    {
+        T = (TABELA *)N->Info;
+        memoria += sizeof(T->NOME_TABELA);
+        N2 = T->LCampos->Inicio;
+        while(N2)
+        {
+            C = (CAMPO *)N2->Info;
+            memoria += sizeof(C->NOME_CAMPO);
+            memoria += sizeof(C->TIPO);
+            N2 = N2->Prox;
+        }
+
+        N3 = T->LRegistos->Inicio;
+        while(N3)
+        {
+            R = (REGISTO *)N3->Info;
+            N4 = R->LValores->Inicio;
+            while(N4)
+            {
+                memoria += strlen((char* )N4->Info);
+                N4 = N4->Prox;
+            }
+
+            N3 = N3->Prox;
+        }
+
+        N = N->Prox;
+    }
+
+    return memoria;
 }
 long int Memoria_Desperdicada_BDados(BDadosCoupe *BD)
 {

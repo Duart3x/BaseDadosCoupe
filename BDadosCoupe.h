@@ -34,6 +34,7 @@ typedef struct
 }REGISTO; 
 
 
+
 //A) Criar a Base de dados;
 BDadosCoupe *Criar_BDados(char *nome_bd, char *versao);
 //B) Criar uma Tabela na Base de Dados, a tabela deve ser inserida � lista de tabelas da BD
