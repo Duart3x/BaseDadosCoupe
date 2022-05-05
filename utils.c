@@ -46,6 +46,7 @@ int getNumberOfLinesInFile(FILE *f)
     size = ftell(f);
     fseek(f, pos, SEEK_SET);*/
 
+    free(LT);
     return size;
 }
 
