@@ -472,7 +472,6 @@ int ImportarTabelaBDados(BDadosCoupe *BD, char *ficheiro_csv, char *nomeTabela)
     return SUCESSO;
 }
 
-//TODO: ACABAR ESTA PORRA
 int Importar_BDados_Excel(BDadosCoupe *BD, char *ficheir_csv)
 {
     FILE* f = fopen(ficheir_csv, "r");
@@ -482,22 +481,16 @@ int Importar_BDados_Excel(BDadosCoupe *BD, char *ficheir_csv)
     int nCamposLidos;
     while (!feof(f))
     {
-        char** V = Read_Split_Line_File(f,2,&nCamposLidos,";");
+        char** V = Read_Split_Line_File(f, 2, &nCamposLidos, ";");
         if(!V)
             continue;
         
         if (strcmp(V[0], "TABELA") == 0)
             continue;
-        
-        FILE* ft = fopen(V[1], "r");
-        
-        if (!ft)
-        {
-            fclose(f);
-            fclose(ft);
-            return INSUCESSO;
-        }
 
+        V[1][strlen(V[1])-1] = '\0';
+        V[0][strlen(V[0])-1] = '\0';
+        ImportarTabelaBDados(BD, V[1], V[0]);
     }
     
     return SUCESSO;
