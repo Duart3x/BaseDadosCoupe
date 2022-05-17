@@ -62,34 +62,40 @@ int Add_Campo_Tabela(TABELA *T, char *nome_campo, char *tipo_campo)
 // D)	Adicionar dados(registos) a uma tabela, os dados s�o dados numa string onde o separador � �;�m ex: Add_Valores_Tabela(T, �123;Joao;965654449�)
 int Add_Valores_Tabela(TABELA *T, char *dados)
 {
-    if(!T) return INSUCESSO;
-    
+    if (!T)
+        return INSUCESSO;
+
     char *token;
     char *delim = ";";
-    char *dados_copia = (char *)malloc(sizeof(char) * (strlen(dados) + 5));
+    char *dados_copia = (char *)malloc(sizeof(char) * (strlen(dados) + 1));
 
     strcpy(dados_copia, dados);
     token = strtok(dados_copia, delim);
+    char *valor = (char *)malloc(sizeof(char) * (strlen(token) + 1));
+    strcpy(valor, token);
 
     REGISTO *R = (REGISTO *)malloc(sizeof(REGISTO));
-    R->LValores = CriarLG();
-
-    AddFimLG(R->LValores, token);
-
     if (!R)
         return INSUCESSO;
+
+    R->LValores = CriarLG();
+
+    AddFimLG(R->LValores, valor);
+
     while (token)
     {
         token = strtok(NULL, delim);
         if (!token)
             break;
-        AddFimLG(R->LValores, token);
+        valor = (char *)malloc(sizeof(char) * (strlen(token) + 1));
+        strcpy(valor, token);
+        AddFimLG(R->LValores, valor);
     }
 
     AddFimLG(T->LRegistos, R);
 
-    free(token);
-    // free(dados_copia);
+    // free(token);
+    free(dados_copia);
 
     return SUCESSO;
 }
@@ -175,8 +181,8 @@ void Mostrar_BDados(BDadosCoupe *BD)
 
 void Destruir_Valor(void *V)
 {
-    /*char* valor = (char*)V;
-    free(valor);*/
+    char *valor = (char *)V;
+    free(valor);
 }
 
 void Destruir_Registo(void *R)
@@ -240,8 +246,8 @@ long int Memoria_BDados(BDadosCoupe *BD)
             N4 = R->LValores->Inicio;
             while (N4)
             {
-                memoria += strlen((char* )N4->Info);
-                
+                memoria += strlen((char *)N4->Info);
+
                 N4 = N4->Prox;
             }
 
@@ -260,21 +266,21 @@ long int Memoria_Desperdicada_BDados(BDadosCoupe *BD)
     memoriaExata += sizeof(char) * strlen(BD->NOME_BDADOS);
     memoriaExata += sizeof(char) * strlen(BD->VERSAO_BDADOS);
 
-    NOG* N = BD->LTabelas->Inicio;
-    NOG* N2 = NULL;
-    NOG* N3 = NULL;
-    NOG* N4 = NULL;
+    NOG *N = BD->LTabelas->Inicio;
+    NOG *N2 = NULL;
+    NOG *N3 = NULL;
+    NOG *N4 = NULL;
 
-    TABELA* T = NULL;
-    CAMPO* C = NULL;
-    REGISTO * R = NULL;
-    
+    TABELA *T = NULL;
+    CAMPO *C = NULL;
+    REGISTO *R = NULL;
+
     while (N)
     {
         T = (TABELA *)N->Info;
         memoriaExata += sizeof(char) * strlen(T->NOME_TABELA);
         N2 = T->LCampos->Inicio;
-        while(N2)
+        while (N2)
         {
             C = (CAMPO *)N2->Info;
             memoriaExata += sizeof(char) * strlen(C->NOME_CAMPO);
@@ -283,13 +289,13 @@ long int Memoria_Desperdicada_BDados(BDadosCoupe *BD)
         }
 
         N3 = T->LRegistos->Inicio;
-        while(N3)
+        while (N3)
         {
             R = (REGISTO *)N3->Info;
             N4 = R->LValores->Inicio;
-            while(N4)
+            while (N4)
             {
-                memoriaExata += strlen((char* )N4->Info);
+                memoriaExata += strlen((char *)N4->Info);
                 N4 = N4->Prox;
             }
 
@@ -319,8 +325,8 @@ int Exportar_Tabela_BDados_Excel(BDadosCoupe *BD, char *tabela, char *ficheir_cs
     while (NC)
     {
         CAMPO *C = (CAMPO *)NC->Info;
-        
-        if(NC->Prox != NULL)
+
+        if (NC->Prox != NULL)
             fprintf(f, "%s;", C->NOME_CAMPO);
         else
             fprintf(f, "%s", C->NOME_CAMPO);
@@ -335,25 +341,25 @@ int Exportar_Tabela_BDados_Excel(BDadosCoupe *BD, char *tabela, char *ficheir_cs
         while (NV)
         {
 
-            if(NV->Prox != NULL)
+            if (NV->Prox != NULL)
                 fprintf(f, "%s;", NV->Info);
             else
                 fprintf(f, "%s", NV->Info);
             NV = NV->Prox;
         }
         fprintf(f, "\n");
-        
+
         NR = NR->Prox;
     }
     fclose(f);
-    char* ficheiroBaseDados = malloc(sizeof(char)*(strlen(BD->NOME_BDADOS)+6));
+    char *ficheiroBaseDados = malloc(sizeof(char) * (strlen(BD->NOME_BDADOS) + 6));
     sprintf(ficheiroBaseDados, "%s.csv", BD->NOME_BDADOS);
 
-    AtulizaFicheiroBDados(BD,ficheiroBaseDados,T->NOME_TABELA,ficheir_csv);
+    AtulizaFicheiroBDados(BD, ficheiroBaseDados, T->NOME_TABELA, ficheir_csv);
     return SUCESSO;
 }
 
-int AtulizaFicheiroBDados(BDadosCoupe *BD,char *ficheiro_csv, char* nomeTabela, char* ficheiroTabela)
+int AtulizaFicheiroBDados(BDadosCoupe *BD, char *ficheiro_csv, char *nomeTabela, char *ficheiroTabela)
 {
     // Check if file exists
     FILE *f = fopen(ficheiro_csv, "r");
@@ -363,20 +369,20 @@ int AtulizaFicheiroBDados(BDadosCoupe *BD,char *ficheiro_csv, char* nomeTabela, 
         f = fopen(ficheiro_csv, "a");
         if (!f)
             return INSUCESSO;
-        
+
         fprintf(f, "%s;%s\n", "TABELA", "FICHEIRO");
         fprintf(f, "%s;%s\n", nomeTabela, ficheiroTabela);
 
         fclose(f);
         return SUCESSO;
     }
-    
+
     // Check if table exists
     int nCamposLidos;
     while (!feof(f))
     {
-        char **V = Read_Split_Line_File(f,2,&nCamposLidos,";");
-        if(!V)
+        char **V = Read_Split_Line_File(f, 2, &nCamposLidos, ";");
+        if (!V)
             continue;
 
         if (strcmp(V[0], nomeTabela) == 0)
@@ -384,24 +390,23 @@ int AtulizaFicheiroBDados(BDadosCoupe *BD,char *ficheiro_csv, char* nomeTabela, 
             fclose(f);
             return SUCESSO;
         }
-
     }
     fclose(f);
     f = fopen(ficheiro_csv, "a");
     if (!f)
         return INSUCESSO;
-    
+
     fprintf(f, "%s;%s\n", nomeTabela, ficheiroTabela);
     fclose(f);
 
-    return SUCESSO;    
+    return SUCESSO;
 }
 
 int Exportar_BDados_Excel(BDadosCoupe *BD)
 {
-    NOG* NT = BD->LTabelas->Inicio;
+    NOG *NT = BD->LTabelas->Inicio;
 
-    char* ficheiroTabelas = malloc(sizeof(char)*250);
+    char *ficheiroTabelas = malloc(sizeof(char) * 250);
 
     while (NT)
     {
@@ -414,7 +419,7 @@ int Exportar_BDados_Excel(BDadosCoupe *BD)
     return SUCESSO;
 }
 
-//TODO: IMPORTAR TABELA
+// TODO: IMPORTAR TABELA
 int ImportarTabelaBDados(BDadosCoupe *BD, char *ficheiro_csv, char *nomeTabela)
 {
     // Check if file exists
@@ -424,50 +429,48 @@ int ImportarTabelaBDados(BDadosCoupe *BD, char *ficheiro_csv, char *nomeTabela)
         fclose(f);
         return INSUCESSO;
     }
-    
-    TABELA* T = malloc(sizeof(TABELA));
+
+    TABELA *T = malloc(sizeof(TABELA));
 
     // Check if table exists
     int nCamposLidos;
     while (!feof(f))
     {
-        char **V = Read_Split_Line_File(f,2,&nCamposLidos,";");
-        if(!V)
+        char **V = Read_Split_Line_File(f, 2, &nCamposLidos, ";");
+        if (!V)
             continue;
-        
     }
     fclose(f);
     return INSUCESSO;
 }
 
-//TODO: ACABAR ESTA PORRA
+// TODO: ACABAR ESTA PORRA
 int Importar_BDados_Excel(BDadosCoupe *BD, char *ficheir_csv)
 {
-    FILE* f = fopen(ficheir_csv, "r");
+    FILE *f = fopen(ficheir_csv, "r");
     if (!f)
         return INSUCESSO;
 
     int nCamposLidos;
     while (!feof(f))
     {
-        char** V = Read_Split_Line_File(f,2,&nCamposLidos,";");
-        if(!V)
+        char **V = Read_Split_Line_File(f, 2, &nCamposLidos, ";");
+        if (!V)
             continue;
-        
+
         if (strcmp(V[0], "TABELA") == 0)
             continue;
-        
-        FILE* ft = fopen(V[1], "r");
-        
+
+        FILE *ft = fopen(V[1], "r");
+
         if (!ft)
         {
             fclose(f);
             fclose(ft);
             return INSUCESSO;
         }
-
     }
-    
+
     return SUCESSO;
 }
 int Exportar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *fich_dat)
