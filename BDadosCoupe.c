@@ -355,11 +355,11 @@ int Exportar_Tabela_BDados_Excel(BDadosCoupe *BD, char *tabela, char *ficheir_cs
     char *ficheiroBaseDados = malloc(sizeof(char) * (strlen(BD->NOME_BDADOS) + 6));
     sprintf(ficheiroBaseDados, "%s.csv", BD->NOME_BDADOS);
 
-    AtulizaFicheiroBDados(BD, ficheiroBaseDados, T->NOME_TABELA, ficheir_csv);
+    AtualizaFicheiroBDados(BD, ficheiroBaseDados, T->NOME_TABELA, ficheir_csv);
     return SUCESSO;
 }
 
-int AtulizaFicheiroBDados(BDadosCoupe *BD, char *ficheiro_csv, char *nomeTabela, char *ficheiroTabela)
+int AtualizaFicheiroBDados(BDadosCoupe *BD, char *ficheiro_csv, char *nomeTabela, char *ficheiroTabela)
 {
     // Check if file exists
     FILE *f = fopen(ficheiro_csv, "r");
@@ -428,15 +428,16 @@ int ImportarTabelaBDados(BDadosCoupe *BD, char *ficheiro_csv, char *nomeTabela)
         fclose(f);
         return INSUCESSO;
     }
-    
-    TABELA* T = Criar_Tabela(BD, nomeTabela);
 
-    char *aux = malloc(sizeof(char)*MAX_LINHA_FICHEIRO);
+    TABELA *T = Criar_Tabela(BD, nomeTabela);
+
+    char *aux = malloc(sizeof(char) * MAX_LINHA_FICHEIRO);
     int nCamposLidos;
     int nMaxCampos = 0;
 
     //? Numero de campos da tabela
-    if (fgets(aux, MAX_LINHA_FICHEIRO, f) != NULL) {
+    if (fgets(aux, MAX_LINHA_FICHEIRO, f) != NULL)
+    {
         char *pch = strtok(aux, ";");
 
         while (pch != NULL)
@@ -449,13 +450,13 @@ int ImportarTabelaBDados(BDadosCoupe *BD, char *ficheiro_csv, char *nomeTabela)
     }
 
     //? Retirar tipo de dados dos Campos (1ª Linha do ficheiro)
-    char **DataTipes = Read_Split_Line_File(f, nMaxCampos, &nCamposLidos,";");
-    if(!DataTipes)
+    char **DataTipes = Read_Split_Line_File(f, nMaxCampos, &nCamposLidos, ";");
+    if (!DataTipes)
         return INSUCESSO;
 
-    //? Adicionar campos á tabela (2ª Linha do ficheiro)	
-    char **V = Read_Split_Line_File(f, nMaxCampos, &nCamposLidos,";");
-    if(!V)
+    //? Adicionar campos á tabela (2ª Linha do ficheiro)
+    char **V = Read_Split_Line_File(f, nMaxCampos, &nCamposLidos, ";");
+    if (!V)
         return INSUCESSO;
 
     for (size_t i = 0; i < nCamposLidos; i++)
@@ -466,7 +467,7 @@ int ImportarTabelaBDados(BDadosCoupe *BD, char *ficheiro_csv, char *nomeTabela)
     //? Adicionar registos á tabela
     while (fgets(aux, MAX_LINHA_FICHEIRO, f) != NULL)
     {
-        if(!aux)
+        if (!aux)
             continue;
 
         Add_Valores_Tabela(T, aux);
@@ -486,15 +487,15 @@ int Importar_BDados_Excel(BDadosCoupe *BD, char *ficheir_csv)
     int nCamposLidos;
     while (!feof(f))
     {
-        char** V = Read_Split_Line_File(f, 2, &nCamposLidos, ";");
-        if(!V)
+        char **V = Read_Split_Line_File(f, 2, &nCamposLidos, ";");
+        if (!V)
             continue;
 
         if (strcmp(V[0], "TABELA") == 0)
             continue;
 
-        V[1][strlen(V[1])-1] = '\0';
-        V[0][strlen(V[0])-1] = '\0';
+        V[1][strlen(V[1]) - 1] = '\0';
+        V[0][strlen(V[0]) - 1] = '\0';
         ImportarTabelaBDados(BD, V[1], V[0]);
     }
 
@@ -502,7 +503,8 @@ int Importar_BDados_Excel(BDadosCoupe *BD, char *ficheir_csv)
 }
 int Exportar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *fich_dat)
 {
-    return SUCESSO;
+    //Fazer Depois
+
 }
 int Importar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *fich_dat)
 {

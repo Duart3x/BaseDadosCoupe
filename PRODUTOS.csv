@@ -1,5 +1,4 @@
-INT;STRING;FLOAT;FLOAT
 ID;NOME;PRECO;QUANTIDADE
 1;agua;20;100
 2;coca-cola;10;200
-3;creatina;15;569
+3;creatina;15;500
