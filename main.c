@@ -6,7 +6,7 @@
 
 int main()
 {
-    printf("Template do projecto BDadosCoupe para os alunos!\n");
+   /* printf("Template do projecto BDadosCoupe para os alunos!\n");
 
     BDadosCoupe *BD = Criar_BDados("BD-Banco", "Versao 1.0");
 
@@ -34,7 +34,7 @@ int main()
     for (size_t i = 1; i < 10; i++)
     {
 
-        sprintf(nomeUtilizador, "Utilizador_%d", i);
+        sprintf(nomeUtilizador, "Utilizador_%d", i); 
 
         idade = rand() % 100;
 
@@ -67,6 +67,63 @@ int main()
 
      Destruir_BDados(BD);
 
-    system("pause");
+    system("pause");*/
+
+    char *menu[] = {"Criar a Base de Dados",
+                    "Criar uma Tabela na Base de Dados",
+                    "Adicionar um campo a uma tabela",
+                    "Adicionar dados a uma tabela",
+                    "Pesquisar uma Tabela da Base de Dados",
+                    "Mostrar uma Tabela",
+                    "Mostrar a Base de Dados(Todas as tabelas)",
+                    "Libertar toda a memória alocada pela Base de Dados",
+                    "Apagar o conteúdo de uma Tabela",
+                    "Apagar o conteúdo de uma Tabela e removê-la da Base de Dados",
+                    "Selecionar da Base de Dados todos os registos que obedeçam a uma dada condição",
+                    "Remover todos os registos que obedeçam a uma dada condição",
+                    "Atualizar todos os registos da tabela onde o Campo é dado",
+                    "\033[31mSAIR\033[0m"}
+
+    bool exitMenu = false;
+    bool askToContinue = false;
+    int file=-1;
+
+    do
+    {
+        askToContinue = true;
+        op = drawMenu(menu, 14, "Menu");
+        switch (op)
+        {
+        case 1:
+            
+            break;
+
+        case 2:
+
+            break;
+
+        case 3:
+
+            break;
+
+        case 4:
+
+            break;
+
+        case 5:
+        
+            break;
+
+        case 6:
+
+            break;
+
+        case -1:
+            exitMenu = true;
+            break;
+        }
+    } while (!exitMenu);
+    
+
     return 0;
 }

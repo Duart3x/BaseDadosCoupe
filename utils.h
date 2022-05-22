@@ -27,5 +27,5 @@ bool contaisNumber(char *str);
 char* strToUpper(char *str);
 bool isNumber(char* value);
 bool checkIfArrayContainsElement(int* array,int length, int element);
-
+int drawMenu(char *opcoes[], int numOpcoes, char *title);
 #endif

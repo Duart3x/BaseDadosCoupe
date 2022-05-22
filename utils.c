@@ -131,3 +131,80 @@ bool checkIfArrayContainsElement(int* array,int length, int element)
     }
     return false;
 }
+
+int drawMenu(char *opcoes[], int numOpcoes, char *title)
+{
+    int key = 0;
+    int option = 1;
+    int biggerOption = 0;
+    int i = 0;
+
+    biggerOption = strlen(title);
+
+    for (i = 0; i < numOpcoes; i++)
+    {
+        if (strlen(opcoes[i]) > biggerOption)
+            biggerOption = strlen(opcoes[i]);
+    }
+
+    if (biggerOption == strlen(title))
+        biggerOption += 10;
+
+    do
+    {
+        system("cls");
+
+        //printf("\n  ********     %s     ********\n\n", title);
+        printf("\n  ");
+        i = 0;
+        for (i = 0; i < ceil(abs(((biggerOption + 14) - (strlen(title) + 10))) / 2.0); i++)
+        {
+            printf("*");
+        }
+        printf("     %s     ", title);
+        i = 0;
+        for (i = 0; i < abs(((biggerOption + 14) - (strlen(title) + 10))) / 2; i++)
+        {
+            printf("*");
+        }
+        printf("\n\n");
+
+        i = 0;
+        for (i = 0; i < numOpcoes; i++)
+        {
+            printf("    %s %s\n", (option == i + 1) ? "   \033[37;1m[\033[31;1mx\033[0m]\033[37;1m\033[0m" : "   \033[30;1m[ ]\033[0m", opcoes[i]);
+        }
+        printf("\n  ");
+        i = 0;
+        for (i = 0; i < 14 + biggerOption; i++)
+        {
+            printf("*");
+        }
+
+        printf("\n  Use as setas para selecionar uma opcao. ENTER para confimar. ESC para sair.\n");
+        key = getch();
+        fflush(stdin);
+
+        if (key == KEY_ESC)
+            return -1;
+
+        if (key == KEY_UP)
+        {
+            if (option > 1)
+                option--;
+            else
+                option = 1;
+        }
+
+        if (key == KEY_DOWN)
+        {
+            if (option < numOpcoes)
+                option++;
+            else
+                option = numOpcoes;
+        }
+
+    } while (key != KEY_ENTER);
+
+    return option;
+}
