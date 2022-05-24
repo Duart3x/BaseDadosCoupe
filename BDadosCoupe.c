@@ -327,6 +327,19 @@ int Exportar_Tabela_BDados_Excel(BDadosCoupe *BD, char *tabela, char *ficheir_cs
         CAMPO *C = (CAMPO *)NC->Info;
 
         if (NC->Prox != NULL)
+            fprintf(f, "%s;", C->TIPO);
+        else
+            fprintf(f, "%s", C->TIPO);
+        NC = NC->Prox;
+    }
+    fprintf(f, "\n");
+
+    NC = T->LCampos->Inicio;
+    while (NC)
+    {
+        CAMPO *C = (CAMPO *)NC->Info;
+
+        if (NC->Prox != NULL)
             fprintf(f, "%s;", C->NOME_CAMPO);
         else
             fprintf(f, "%s", C->NOME_CAMPO);
@@ -450,8 +463,8 @@ int ImportarTabelaBDados(BDadosCoupe *BD, char *ficheiro_csv, char *nomeTabela)
     }
 
     //? Retirar tipo de dados dos Campos (1ª Linha do ficheiro)
-    char **DataTipes = Read_Split_Line_File(f, nMaxCampos, &nCamposLidos, ";");
-    if (!DataTipes)
+    char **DataTypes = Read_Split_Line_File(f, nMaxCampos, &nCamposLidos, ";");
+    if (!DataTypes)
         return INSUCESSO;
 
     //? Adicionar campos á tabela (2ª Linha do ficheiro)
@@ -461,7 +474,7 @@ int ImportarTabelaBDados(BDadosCoupe *BD, char *ficheiro_csv, char *nomeTabela)
 
     for (size_t i = 0; i < nCamposLidos; i++)
     {
-        Add_Campo_Tabela(T, V[i], DataTipes[i]);
+        Add_Campo_Tabela(T, V[i], DataTypes[i]);
     }
 
     //? Adicionar registos á tabela
@@ -469,7 +482,7 @@ int ImportarTabelaBDados(BDadosCoupe *BD, char *ficheiro_csv, char *nomeTabela)
     {
         if (!aux)
             continue;
-
+        aux[strlen(aux) - 1] = '\0';
         Add_Valores_Tabela(T, aux);
     }
 

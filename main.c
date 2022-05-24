@@ -1,14 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "utils.h"
 
 #include "BDadosCoupe.h"
 
 int main()
 {
-   /* printf("Template do projecto BDadosCoupe para os alunos!\n");
-
-    BDadosCoupe *BD = Criar_BDados("BD-Banco", "Versao 1.0");
+    BDadosCoupe *BD = Criar_BDados("BD", "Versao 1.0");
 
     TABELA *T = Criar_Tabela(BD, "CLIENTES");
     Add_Campo_Tabela(T, "ID", "INT");
@@ -31,10 +30,10 @@ int main()
     char *dados = (char *)malloc(sizeof(char) * 100);
     int idade;
     int a = 0;
-    for (size_t i = 1; i < 10; i++)
+    for (size_t i = 1; i < 100; i++)
     {
 
-        sprintf(nomeUtilizador, "Utilizador_%d", i); 
+        sprintf(nomeUtilizador, "Utilizador_%d", i);
 
         idade = rand() % 100;
 
@@ -51,30 +50,34 @@ int main()
     free(dados);
     // Add_Valores_Tabela_BDados(BD, "CLIENTES", "23;Joao;25");
 
-    Mostrar_Tabela(T);
-    DELETE_TABLE_DATA(T);
-    Mostrar_Tabela(T);
+   
     // Exportar_Tabela_BDados_Excel(BD,"CLIENTES","clientes.csv");
     // Exportar_Tabela_BDados_Excel(BD,"PRODUTOS","produtos.csv");
+    Mostrar_BDados(BD);
 
-    //Exportar_BDados_Excel(BD);
+    Exportar_BDados_Excel(BD);
 
-    // Mostrar_BDados(BD);
 
     long int memoria = Memoria_BDados(BD);
 
     printf("Memoria ocupada: %ld bytes\n", memoria);
 
-     Destruir_BDados(BD);
+    Destruir_BDados(BD);
+    system("pause");
 
-    system("pause");*/
+    BDadosCoupe *BD2 = Criar_BDados("BD", "Versao 1.0");
 
-    char *menu[] = {"Criar a Base de Dados",
+    Importar_BDados_Excel(BD2,"BD.csv");
+    Mostrar_BDados(BD2);
+
+    system("pause");
+
+    /*char *menu[] = {"Criar a Base de Dados",
                     "Criar uma Tabela na Base de Dados",
                     "Adicionar um campo a uma tabela",
                     "Adicionar dados a uma tabela",
                     "Pesquisar uma Tabela da Base de Dados",
-                    "Mostrar uma Tabela",
+                    "Mostrar uma tabela",
                     "Mostrar a Base de Dados(Todas as tabelas)",
                     "Libertar toda a memória alocada pela Base de Dados",
                     "Apagar o conteúdo de uma Tabela",
@@ -82,11 +85,12 @@ int main()
                     "Selecionar da Base de Dados todos os registos que obedeçam a uma dada condição",
                     "Remover todos os registos que obedeçam a uma dada condição",
                     "Atualizar todos os registos da tabela onde o Campo é dado",
-                    "\033[31mSAIR\033[0m"}
+                    "\033[31mSAIR\033[0m"};
 
     bool exitMenu = false;
     bool askToContinue = false;
-    int file=-1;
+    int file = -1;
+    int op = -1;
 
     do
     {
@@ -94,36 +98,35 @@ int main()
         op = drawMenu(menu, 14, "Menu");
         switch (op)
         {
-        case 1:
-            
-            break;
+                case 1:
 
-        case 2:
+                    break;
 
-            break;
+                case 2:
 
-        case 3:
+                    break;
 
-            break;
+                case 3:
 
-        case 4:
+                    break;
 
-            break;
+                case 4:
 
-        case 5:
-        
-            break;
+                    break;
 
-        case 6:
+                case 5:
 
-            break;
+                    break;
 
-        case -1:
-            exitMenu = true;
-            break;
+                case 6:
+
+                    break;
+
+            case -1:
+                exitMenu = true;
+                break;
         }
-    } while (!exitMenu);
-    
-
+    } while (exitMenu == false);
+*/
     return 0;
 }
