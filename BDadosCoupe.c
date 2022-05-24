@@ -524,9 +524,93 @@ int Exportar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *fich_dat)
 {
     //Fazer Depois
 
+    FILE *f = fopen(fich_dat, "wb");
+    if (!f)
+        return INSUCESSO;
+
+    NOG* NT = BD->LTabelas->Inicio;
+    while (NT)
+    {
+        TABELA *T = (TABELA *)NT->Info;
+        NOG* NC = T->LCampos->Inicio;
+        char* nomeFicheiro = malloc(sizeof(char) * 50);
+        sprintf(nomeFicheiro, "%s.dat", T->NOME_TABELA);
+        FILE* ft = fopen(nomeFicheiro, "wb");
+
+        fwrite(&(T->LCampos->NEL), sizeof(int),1,ft);
+        while (NC)
+        {
+            CAMPO* C = (CAMPO *)NC->Info;
+            int N = sizeof(C->TIPO);
+            fwrite(&(N), sizeof(int),1,ft);
+            fwrite(C->TIPO, sizeof(char), N, ft);
+            NC = NC->Prox;
+        }
+
+        NC = T->LCampos->Inicio;
+        while (NC)
+        {
+            CAMPO* C = (CAMPO *)NC->Info;
+            int N = sizeof(C->NOME_CAMPO);
+            fwrite(&(N), sizeof(int),1,ft);
+            fwrite(C->NOME_CAMPO, sizeof(char), N, ft);
+            NC = NC->Prox;
+        }
+
+        NOG* NR = T->LRegistos->Inicio;
+        while(NR)
+        {
+            REGISTO* R = (REGISTO *)NR->Info;
+            NOG* NV = R->LValores->Inicio;
+            
+            while (NV)
+            {
+                char* valor = (char*) NV->Info;
+
+                int length = sizeof(valor);
+
+                fwrite(&(length), sizeof(int),1,ft);
+                fwrite(valor, sizeof(char), length, ft);
+
+                NV = NV->Prox;
+            }
+            NR = NR->Prox;
+        }
+        
+        fclose(ft);
+        int lengthNomeTabela = strlen(T->NOME_TABELA)+1;
+        fwrite(&lengthNomeTabela,sizeof(int),1,f);
+        fwrite(T->NOME_TABELA,sizeof(char),lengthNomeTabela,f);
+
+        int lengthNomeFicheiro = strlen(nomeFicheiro)+1;
+        fwrite(&lengthNomeFicheiro,sizeof(int),1,f);
+        fwrite(nomeFicheiro,sizeof(char),lengthNomeTabela,f);
+
+        NT = NT->Prox;
+    }
+    
+    fclose(f);
+    return SUCESSO;
 }
 int Importar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *fich_dat)
 {
+    FILE* f = fopen(fich_dat, "rb");
+
+    
+    int lengthNomeTabela;
+    fread(&lengthNomeTabela,sizeof(int),1,f);
+
+    char* nomeTabela = malloc(sizeof(char) * (lengthNomeTabela +1));
+    fread(nomeTabela,sizeof(char),lengthNomeTabela,f);
+    printf("%d -> %s\n",lengthNomeTabela,nomeTabela);
+
+    int lengthNomeFicheiro;
+    char* nomeFicheiro = malloc(sizeof(char) * (lengthNomeFicheiro +1));
+    fread(nomeFicheiro,sizeof(char),lengthNomeFicheiro,f);
+    printf("%d -> %s\n",lengthNomeTabela,nomeTabela);
+
+    fclose(f);
+
     return SUCESSO;
 }
 // L)	Apagar o conte�do de uma Tabela. A Tabela continua a existir na BDados, mas n�o cont�m os dados, ou seja, os campos continuam, mas os registos s�o eliminados.

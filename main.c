@@ -42,7 +42,17 @@ int main()
         Add_Valores_Tabela(T, dados);
     }
 
-    time_t end = clock();
+    char *ficheiroBaseDados = malloc(sizeof(char) * strlen(BD->NOME_BDADOS) + 6);
+    sprintf(ficheiroBaseDados, "%s.dat", BD->NOME_BDADOS);
+    Exportar_BDados_Ficheiro_Binario(BD, ficheiroBaseDados);
+    
+    Destruir_BDados(BD);
+
+    BDadosCoupe *BD2 = Criar_BDados("BD", "Versao 1.0");
+    Importar_BDados_Ficheiro_Binario(BD2, "BD.dat");
+    Destruir_BDados(BD2);
+    system("pause");
+    /*time_t end = clock();
     double time = (double)(end - init) / CLOCKS_PER_SEC;
     printf("Tempo de execucao: %f segundos\n", time);
 
@@ -50,7 +60,7 @@ int main()
     free(dados);
     // Add_Valores_Tabela_BDados(BD, "CLIENTES", "23;Joao;25");
 
-   
+
     // Exportar_Tabela_BDados_Excel(BD,"CLIENTES","clientes.csv");
     // Exportar_Tabela_BDados_Excel(BD,"PRODUTOS","produtos.csv");
     Mostrar_BDados(BD);
@@ -69,8 +79,9 @@ int main()
 
     Importar_BDados_Excel(BD2,"BD.csv");
     Mostrar_BDados(BD2);
+    Destruir_BDados(BD2);
 
-    system("pause");
+    system("pause");*/
 
     /*char *menu[] = {"Criar a Base de Dados",
                     "Criar uma Tabela na Base de Dados",
