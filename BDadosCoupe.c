@@ -445,10 +445,12 @@ int ImportarTabelaBDados(BDadosCoupe *BD, char *ficheiro_csv, char *nomeTabela)
     TABELA *T = Criar_Tabela(BD, nomeTabela);
 
     char *aux = malloc(sizeof(char) * MAX_LINHA_FICHEIRO);
+    char **DataTypes = malloc(sizeof(char *) * MAX_LINHA_FICHEIRO);
     int nCamposLidos;
     int nMaxCampos = 0;
 
     //? Numero de campos da tabela
+    //? Retirar tipo de dados dos Campos (1ª Linha do ficheiro)
     if (fgets(aux, MAX_LINHA_FICHEIRO, f) != NULL)
     {
         char *pch = strtok(aux, ";");
@@ -456,16 +458,15 @@ int ImportarTabelaBDados(BDadosCoupe *BD, char *ficheiro_csv, char *nomeTabela)
         while (pch != NULL)
         {
             nMaxCampos++;
+            if(pch[strlen(pch) - 1] == '\n')
+                pch[strlen(pch) - 1] = '\0';
+            DataTypes[nMaxCampos - 1] = malloc(sizeof(char) * (strlen(pch) + 1));
+            strcpy(DataTypes[nMaxCampos - 1], pch);
             pch = strtok(NULL, ";");
         }
 
         free(pch);
     }
-
-    //? Retirar tipo de dados dos Campos (1ª Linha do ficheiro)
-    char **DataTypes = Read_Split_Line_File(f, nMaxCampos, &nCamposLidos, ";");
-    if (!DataTypes)
-        return INSUCESSO;
 
     //? Adicionar campos á tabela (2ª Linha do ficheiro)
     char **V = Read_Split_Line_File(f, nMaxCampos, &nCamposLidos, ";");
@@ -474,8 +475,13 @@ int ImportarTabelaBDados(BDadosCoupe *BD, char *ficheiro_csv, char *nomeTabela)
 
     for (size_t i = 0; i < nCamposLidos; i++)
     {
+        if(V[i][strlen(V[i]) - 1] == '\n')
+            V[i][strlen(V[i]) - 1] = '\0';
+            
         Add_Campo_Tabela(T, V[i], DataTypes[i]);
     }
+
+    free(DataTypes);
 
     //? Adicionar registos á tabela
     while (fgets(aux, MAX_LINHA_FICHEIRO, f) != NULL)
