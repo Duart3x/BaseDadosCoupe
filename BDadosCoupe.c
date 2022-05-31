@@ -624,9 +624,12 @@ int DELETE_TABLE_DATA(TABELA *T)
     return SUCESSO;
 }
 
-int Compara_Nome_Tabela(TABELA* t1, TABELA* t2)
+int Compara_Nome_Tabela(void* t1, void* t2)
 {
-    return strcmp(t1->NOME_TABELA,t2->NOME_TABELA);
+    TABELA* T1 = (TABELA*) t1;
+    TABELA* T2 = (TABELA*) t2;
+
+    return strcmp(T1->NOME_TABELA,T2->NOME_TABELA);
 }
 
 // M)	Apagar o conte�do de uma Tabela e remove a tabela da base de dados.
