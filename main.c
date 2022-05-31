@@ -7,7 +7,7 @@
 
 int main()
 {
-    BDadosCoupe *BD = Criar_BDados("BD", "Versao 1.0");
+    /*BDadosCoupe *BD = Criar_BDados("BD", "Versao 1.0");
 
     TABELA *T = Criar_Tabela(BD, "CLIENTES");
     Add_Campo_Tabela(T, "ID", "INT");
@@ -46,10 +46,17 @@ int main()
     sprintf(ficheiroBaseDados, "%s.dat", BD->NOME_BDADOS);
     Exportar_BDados_Ficheiro_Binario(BD, ficheiroBaseDados);
     
-    Destruir_BDados(BD);
+    Destruir_BDados(BD);*/
 
     BDadosCoupe *BD2 = Criar_BDados("BD", "Versao 1.0");
-    Importar_BDados_Ficheiro_Binario(BD2, "BD.dat");
+    Importar_BDados_Excel(BD2, "BD.csv");
+
+    //Mostrar_BDados(BD2);
+
+    printf("\n  N de resultados: %d\n", SELECT(BD2, "CLIENTES", Compare, "IDADE", "34"));
+
+    system("pause");
+
     Destruir_BDados(BD2);
     system("pause");
     /*time_t end = clock();
