@@ -84,3 +84,33 @@ void MostrarRevLG(ListaGenerica *L, void (*fshow)(void *))
         P = P->Ant;
     }
 }
+
+
+// Remover elemento da lista
+
+int RemoveLG(ListaGenerica *L, void *X, int (*fcomp)(void *, void *))
+{
+    if (L == NULL) return INSUCESSO;
+    if (!L->Inicio) return INSUCESSO;
+    NOG *P = L->Inicio;
+    while (P != NULL)
+    {
+        if (fcomp(P->Info, X) == 0)
+        {
+            if (P->Ant)
+                P->Ant->Prox = P->Prox;
+            else
+                L->Inicio = P->Prox;
+            if (P->Prox)
+                P->Prox->Ant = P->Ant;
+            else
+                L->Fim = P->Ant;
+            free(P);
+            L->NEL--;
+            return SUCESSO;
+        }
+        
+        P = P->Prox;
+    }
+    return INSUCESSO;
+}

@@ -623,6 +623,12 @@ int DELETE_TABLE_DATA(TABELA *T)
 
     return SUCESSO;
 }
+
+int Compara_Nome_Tabela(TABELA* t1, TABELA* t2)
+{
+    return strcmp(t1->NOME_TABELA,t2->NOME_TABELA);
+}
+
 // M)	Apagar o conte�do de uma Tabela e remove a tabela da base de dados.
 int DROP_TABLE(BDadosCoupe *BD, char *nome_tabela)
 {
@@ -634,9 +640,11 @@ int DROP_TABLE(BDadosCoupe *BD, char *nome_tabela)
     if (!T)
         return INSUCESSO;
     
-    DestruirLG(T->LCampos, Destruir_Campo);    
-    DELETE_TABLE_DATA(T);
-    free(T);
+    DestruirLG(T->LCampos, Destruir_Campo);
+    DestruirLG(T->LRegistos, Destruir_Registo);
+
+    RemoveLG(BD->LTabelas, T, Compara_Nome_Tabela);
+    // free(T);
 
     return INSUCESSO;
 }
