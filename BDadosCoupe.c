@@ -651,8 +651,33 @@ int DROP_TABLE(BDadosCoupe *BD, char *nome_tabela)
 // N)	Selecionar (Apresentar no ecran!) da base de dados todos os registos que obede�am a uma dada condi��o, a fun��o deve retornar o n�mero de registos selecionados. (Ter em aten��o o exemplo das aulas te�ricas!). Nota: esta � certamente a funcionalidade mais usada num sistema de base de dados�, por isso se estiver bem otimizada�. O utilizador agradece!!!!
 int SELECT(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), char *nome_campo, char *valor_comparacao)
 {
-    return SUCESSO;
+    if (!BD || !_tabela || !f_condicao || !nome_campo || !valor_comparacao)
+        return INSUCESSO;
+    
+    TABELA* T = Pesquisar_Tabela(BD, _tabela);
+
+    if (!T)
+        return INSUCESSO;
+
+    NOG* NR = T->LRegistos->Inicio;
+    int contador = 0;
+    while (NR)
+    {
+        REGISTO* R = (REGISTO *)NR->Info;
+        NOG* NV = R->LValores->Inicio;
+        while (NV)
+        {
+            char* valor = (char*) NV->Info;
+            if (f_condicao(nome_campo, valor))
+                contador++;
+            NV = NV->Prox;
+        }
+        NR = NR->Prox;
+    }
+
+    return contador;
 }
+
 // O)	Remover todos os registos que obede�am a uma dada condi��o, a fun��o deve retornar o n�mero de registos removidos.
 int DELETE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), char *nome_campo, char *valor_comparacao)
 {
