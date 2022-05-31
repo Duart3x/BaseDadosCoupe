@@ -35,5 +35,6 @@ char* strToUpper(char *str);
 bool isNumber(char* value);
 bool checkIfArrayContainsElement(int* array,int length, int element);
 int drawMenu(char *opcoes[], int numOpcoes, char *title);
+char* concatString(const char *s1, const char *s2);
 
 #endif

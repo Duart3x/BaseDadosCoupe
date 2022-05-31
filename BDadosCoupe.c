@@ -458,7 +458,7 @@ int ImportarTabelaBDados(BDadosCoupe *BD, char *ficheiro_csv, char *nomeTabela)
         while (pch != NULL)
         {
             nMaxCampos++;
-            if(pch[strlen(pch) - 1] == '\n')
+            if (pch[strlen(pch) - 1] == '\n')
                 pch[strlen(pch) - 1] = '\0';
             DataTypes[nMaxCampos - 1] = malloc(sizeof(char) * (strlen(pch) + 1));
             strcpy(DataTypes[nMaxCampos - 1], pch);
@@ -475,9 +475,9 @@ int ImportarTabelaBDados(BDadosCoupe *BD, char *ficheiro_csv, char *nomeTabela)
 
     for (size_t i = 0; i < nCamposLidos; i++)
     {
-        if(V[i][strlen(V[i]) - 1] == '\n')
+        if (V[i][strlen(V[i]) - 1] == '\n')
             V[i][strlen(V[i]) - 1] = '\0';
-            
+
         Add_Campo_Tabela(T, V[i], DataTypes[i]);
     }
 
@@ -522,92 +522,161 @@ int Importar_BDados_Excel(BDadosCoupe *BD, char *ficheir_csv)
 }
 int Exportar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *fich_dat)
 {
-    //Fazer Depois
+    // Fazer Depois
 
     FILE *f = fopen(fich_dat, "wb");
     if (!f)
         return INSUCESSO;
 
-    NOG* NT = BD->LTabelas->Inicio;
+    NOG *NT = BD->LTabelas->Inicio;
+
+    fwrite(&BD->LTabelas->NEL, sizeof(int), 1, f);
     while (NT)
     {
         TABELA *T = (TABELA *)NT->Info;
-        NOG* NC = T->LCampos->Inicio;
-        char* nomeFicheiro = malloc(sizeof(char) * 50);
+        NOG *NC = T->LCampos->Inicio;
+        char *nomeFicheiro = malloc(sizeof(char) * 55);
         sprintf(nomeFicheiro, "%s.dat", T->NOME_TABELA);
-        FILE* ft = fopen(nomeFicheiro, "wb");
+        FILE *ft = fopen(nomeFicheiro, "wb");
 
-        fwrite(&(T->LCampos->NEL), sizeof(int),1,ft);
+        fwrite(&(T->LCampos->NEL), sizeof(int), 1, ft);
         while (NC)
         {
-            CAMPO* C = (CAMPO *)NC->Info;
+            CAMPO *C = (CAMPO *)NC->Info;
             int N = sizeof(C->TIPO);
-            fwrite(&(N), sizeof(int),1,ft);
+            fwrite(&(N), sizeof(int), 1, ft);
             fwrite(C->TIPO, sizeof(char), N, ft);
-            NC = NC->Prox;
-        }
 
-        NC = T->LCampos->Inicio;
-        while (NC)
-        {
-            CAMPO* C = (CAMPO *)NC->Info;
-            int N = sizeof(C->NOME_CAMPO);
-            fwrite(&(N), sizeof(int),1,ft);
+            N = sizeof(C->NOME_CAMPO);
+            fwrite(&(N), sizeof(int), 1, ft);
             fwrite(C->NOME_CAMPO, sizeof(char), N, ft);
             NC = NC->Prox;
         }
 
-        NOG* NR = T->LRegistos->Inicio;
-        while(NR)
+      /*  NC = T->LCampos->Inicio;
+        while (NC)
         {
-            REGISTO* R = (REGISTO *)NR->Info;
-            NOG* NV = R->LValores->Inicio;
-            
+            CAMPO *C = (CAMPO *)NC->Info;
+            int N = sizeof(C->NOME_CAMPO);
+            fwrite(&(N), sizeof(int), 1, ft);
+            fwrite(C->NOME_CAMPO, sizeof(char), N, ft);
+            NC = NC->Prox;
+        }*/
+
+        NOG *NR = T->LRegistos->Inicio;
+        fwrite(&(T->LRegistos->NEL), sizeof(int), 1, ft);
+        while (NR)
+        {
+            REGISTO *R = (REGISTO *)NR->Info;
+            NOG *NV = R->LValores->Inicio;
+
             while (NV)
             {
-                char* valor = (char*) NV->Info;
+                char *valor = (char *)NV->Info;
+               // strcat(valor, ";");
 
-                int length = sizeof(valor);
+                int length = strlen(valor) + 1;
 
-                fwrite(&(length), sizeof(int),1,ft);
+                fwrite(&length, sizeof(int), 1, ft);
                 fwrite(valor, sizeof(char), length, ft);
 
                 NV = NV->Prox;
             }
             NR = NR->Prox;
         }
-        
-        fclose(ft);
-        int lengthNomeTabela = strlen(T->NOME_TABELA)+1;
-        fwrite(&lengthNomeTabela,sizeof(int),1,f);
-        fwrite(T->NOME_TABELA,sizeof(char),lengthNomeTabela,f);
 
-        int lengthNomeFicheiro = strlen(nomeFicheiro)+1;
-        fwrite(&lengthNomeFicheiro,sizeof(int),1,f);
-        fwrite(nomeFicheiro,sizeof(char),lengthNomeTabela,f);
+        fclose(ft);
+        int lengthNomeTabela = strlen(T->NOME_TABELA) + 1;
+        fwrite(&lengthNomeTabela, sizeof(int), 1, f);
+        fwrite(T->NOME_TABELA, sizeof(char), lengthNomeTabela, f);
+
+        int lengthNomeFicheiro = strlen(nomeFicheiro) + 1;
+        fwrite(&lengthNomeFicheiro, sizeof(int), 1, f);
+        fwrite(nomeFicheiro, sizeof(char), lengthNomeFicheiro, f);
 
         NT = NT->Prox;
     }
-    
+
     fclose(f);
     return SUCESSO;
 }
 int Importar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *fich_dat)
 {
-    FILE* f = fopen(fich_dat, "rb");
+    FILE *f = fopen(fich_dat, "rb");
+    FILE *ft = NULL;
 
-    
-    int lengthNomeTabela;
-    fread(&lengthNomeTabela,sizeof(int),1,f);
+    int numTabelas;
+    int numCampos;
+    int numRegistos; 
 
-    char* nomeTabela = malloc(sizeof(char) * (lengthNomeTabela +1));
-    fread(nomeTabela,sizeof(char),lengthNomeTabela,f);
-    printf("%d -> %s\n",lengthNomeTabela,nomeTabela);
+    fread(&numTabelas, sizeof(int), 1, f);
 
-    int lengthNomeFicheiro;
-    char* nomeFicheiro = malloc(sizeof(char) * (lengthNomeFicheiro +1));
-    fread(nomeFicheiro,sizeof(char),lengthNomeFicheiro,f);
-    printf("%d -> %s\n",lengthNomeTabela,nomeTabela);
+    for (size_t i = 0; i < numTabelas; i++)
+    {
+        int lengthNomeTabela;
+        fread(&lengthNomeTabela, sizeof(int), 1, f);
+        char *nomeTabela = malloc(sizeof(char) * (lengthNomeTabela + 1));
+        fread(nomeTabela, sizeof(char), lengthNomeTabela, f);
+
+        int lengthNomeFicheiro;
+        fread(&lengthNomeFicheiro, sizeof(int), 1, f);
+        char *nomeFicheiro = malloc(sizeof(char) * (lengthNomeFicheiro + 1));
+        fread(nomeFicheiro, sizeof(char), lengthNomeFicheiro, f);
+        printf("%s\n", nomeFicheiro);
+
+        ft = fopen(nomeFicheiro, "rb");
+        if (!ft)
+            return INSUCESSO;
+
+        TABELA* T = Criar_Tabela(BD, nomeTabela);
+
+
+        numCampos = 0;
+        fread(&numCampos, sizeof(int), 1, ft);
+
+        for (size_t i = 0; i < numCampos; i++)
+        {
+            int lengthTipo;
+            fread(&lengthTipo, sizeof(int), 1, ft);
+            char *tipo = malloc(sizeof(char) * (lengthTipo + 1));
+            fread(tipo, sizeof(char), lengthTipo, ft);
+
+            int lengthNomeCampo;
+            fread(&lengthNomeCampo, sizeof(int), 1, ft);
+            char *nomeCampo = malloc(sizeof(char) * (lengthNomeCampo + 1));
+            fread(nomeCampo, sizeof(char), lengthNomeCampo, ft);
+
+            Add_Campo_Tabela(T, nomeCampo, tipo);
+        }
+
+        fread(&numRegistos, sizeof(int), 1, ft);
+        for (size_t i = 0; i < numRegistos; i++)
+        {
+            char* valores = malloc(sizeof(char) * 8);
+            for (size_t k = 0; k < numCampos; k++)
+            {
+                int lengthValor;
+                fread(&lengthValor, sizeof(int), 1, ft);
+
+                char* valor = malloc(sizeof(char) * (lengthValor + 1));
+                fread(valor, sizeof(char), lengthValor, ft);
+
+                // Concat valor into valores with ';' separator
+                valores = concatString(valores, valor);
+
+                if(i == numCampos - 1)
+                    valores = concatString(valores, ";");
+
+            }
+
+            Add_Valores_Tabela(T, valores);
+        }
+
+        Mostrar_Tabela(T);
+
+        fclose(ft);
+    }
+
 
     fclose(f);
 
@@ -624,12 +693,12 @@ int DELETE_TABLE_DATA(TABELA *T)
     return SUCESSO;
 }
 
-int Compara_Nome_Tabela(void* t1, void* t2)
+int Compara_Nome_Tabela(void *t1, void *t2)
 {
-    TABELA* T1 = (TABELA*) t1;
-    TABELA* T2 = (TABELA*) t2;
+    TABELA *T1 = (TABELA *)t1;
+    TABELA *T2 = (TABELA *)t2;
 
-    return strcmp(T1->NOME_TABELA,T2->NOME_TABELA);
+    return strcmp(T1->NOME_TABELA, T2->NOME_TABELA);
 }
 
 // M)	Apagar o conte�do de uma Tabela e remove a tabela da base de dados.
@@ -637,12 +706,12 @@ int DROP_TABLE(BDadosCoupe *BD, char *nome_tabela)
 {
     if (!BD || !nome_tabela)
         return INSUCESSO;
-    
-    TABELA* T = Pesquisar_Tabela(BD, nome_tabela);
+
+    TABELA *T = Pesquisar_Tabela(BD, nome_tabela);
 
     if (!T)
         return INSUCESSO;
-    
+
     DestruirLG(T->LCampos, Destruir_Campo);
     DestruirLG(T->LRegistos, Destruir_Registo);
 
@@ -656,21 +725,21 @@ int SELECT(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
 {
     if (!BD || !_tabela || !f_condicao || !nome_campo || !valor_comparacao)
         return INSUCESSO;
-    
-    TABELA* T = Pesquisar_Tabela(BD, _tabela);
+
+    TABELA *T = Pesquisar_Tabela(BD, _tabela);
 
     if (!T)
         return INSUCESSO;
 
-    NOG* NR = T->LRegistos->Inicio;
+    NOG *NR = T->LRegistos->Inicio;
     int contador = 0;
     while (NR)
     {
-        REGISTO* R = (REGISTO *)NR->Info;
-        NOG* NV = R->LValores->Inicio;
+        REGISTO *R = (REGISTO *)NR->Info;
+        NOG *NV = R->LValores->Inicio;
         while (NV)
         {
-            char* valor = (char*) NV->Info;
+            char *valor = (char *)NV->Info;
             if (f_condicao(nome_campo, valor))
                 contador++;
             NV = NV->Prox;
