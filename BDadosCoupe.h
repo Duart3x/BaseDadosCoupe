@@ -70,6 +70,8 @@ int Importar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *fich_dat);
 int DELETE_TABLE_DATA(TABELA *T);
 //M)	Apagar o conte�do de uma Tabela e remove a tabela da base de dados.
 int DROP_TABLE(BDadosCoupe *BD, char *nome_tabela);
+
+int Compare(char *s1, char *s2);
 //N)	Selecionar (Apresentar no ecran!) da base de dados todos os registos que obede�am a uma dada condi��o, a fun��o deve retornar o n�mero de registos selecionados. (Ter em aten��o o exemplo das aulas te�ricas!). Nota: esta � certamente a funcionalidade mais usada num sistema de base de dados�, por isso se estiver bem otimizada�. O utilizador agradece!!!!
 int SELECT(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), char *nome_campo, char *valor_comparacao);
 //O)	Remover todos os registos que obede�am a uma dada condi��o, a fun��o deve retornar o n�mero de registos removidos.

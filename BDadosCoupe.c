@@ -514,7 +514,7 @@ int Importar_BDados_Excel(BDadosCoupe *BD, char *ficheir_csv)
             continue;
 
         V[1][strlen(V[1]) - 1] = '\0';
-        V[0][strlen(V[0]) - 1] = '\0';
+
         ImportarTabelaBDados(BD, V[1], V[0]);
     }
 
@@ -651,6 +651,12 @@ int DROP_TABLE(BDadosCoupe *BD, char *nome_tabela)
 
     return INSUCESSO;
 }
+
+int Compare(char *s1, char *s2)
+{
+    return strcmp(s1, s2);
+}
+
 // N)	Selecionar (Apresentar no ecran!) da base de dados todos os registos que obede�am a uma dada condi��o, a fun��o deve retornar o n�mero de registos selecionados. (Ter em aten��o o exemplo das aulas te�ricas!). Nota: esta � certamente a funcionalidade mais usada num sistema de base de dados�, por isso se estiver bem otimizada�. O utilizador agradece!!!!
 int SELECT(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), char *nome_campo, char *valor_comparacao)
 {
@@ -663,22 +669,74 @@ int SELECT(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
         return INSUCESSO;
 
     NOG* NR = T->LRegistos->Inicio;
-    int contador = 0;
+    NOG* NC = T->LCampos->Inicio;
+
+    int campoIndex = -1;
+    int aux = 0;
+
+    while (NC)
+    {
+        CAMPO* C = (CAMPO *)NC->Info;
+
+        if (strcmp(C->NOME_CAMPO, nome_campo) == 0)
+            campoIndex = aux;
+            
+
+        aux++;
+        NC = NC->Prox;
+    }
+
+    if(campoIndex == -1)
+        return INSUCESSO;
+
+    aux = 0;
+    int count = 0;
+    int found = 0;
+
+    printf("  QUERY: SELECT * FROM %s WHERE %s = %s\n  Resultado(s):\n\n", _tabela, nome_campo, valor_comparacao);
+
     while (NR)
     {
         REGISTO* R = (REGISTO *)NR->Info;
         NOG* NV = R->LValores->Inicio;
+
+        aux = 0;
+
         while (NV)
         {
-            char* valor = (char*) NV->Info;
-            if (f_condicao(nome_campo, valor))
-                contador++;
+            if(aux == campoIndex)
+            {
+                char* valor = (char*) NV->Info;
+                if (f_condicao(valor, valor_comparacao) == 0) {
+                    found = 1;
+                    count++;
+                }  
+            }
+
+            aux++;
+
+            if(found)
+                break;
+
             NV = NV->Prox;
         }
+
+        if(!found)
+        {
+            NR = NR->Prox;
+            continue;
+        }
+
+        NV = R->LValores->Inicio;
+        
+        MostrarLG(R->LValores, Mostra_Valor);
+        printf("\n");
+        
+        found = 0;
         NR = NR->Prox;
     }
 
-    return contador;
+    return count;
 }
 
 // O)	Remover todos os registos que obede�am a uma dada condi��o, a fun��o deve retornar o n�mero de registos removidos.
