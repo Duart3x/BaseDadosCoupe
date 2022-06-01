@@ -522,8 +522,6 @@ int Importar_BDados_Excel(BDadosCoupe *BD, char *ficheir_csv)
 }
 int Exportar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *fich_dat)
 {
-    // Fazer Depois
-
     FILE *f = fopen(fich_dat, "wb");
     if (!f)
         return INSUCESSO;
@@ -552,16 +550,6 @@ int Exportar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *fich_dat)
             fwrite(C->NOME_CAMPO, sizeof(char), N, ft);
             NC = NC->Prox;
         }
-
-      /*  NC = T->LCampos->Inicio;
-        while (NC)
-        {
-            CAMPO *C = (CAMPO *)NC->Info;
-            int N = sizeof(C->NOME_CAMPO);
-            fwrite(&(N), sizeof(int), 1, ft);
-            fwrite(C->NOME_CAMPO, sizeof(char), N, ft);
-            NC = NC->Prox;
-        }*/
 
         NOG *NR = T->LRegistos->Inicio;
         fwrite(&(T->LRegistos->NEL), sizeof(int), 1, ft);
@@ -622,13 +610,13 @@ int Importar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *fich_dat)
         fread(&lengthNomeFicheiro, sizeof(int), 1, f);
         char *nomeFicheiro = malloc(sizeof(char) * (lengthNomeFicheiro + 1));
         fread(nomeFicheiro, sizeof(char), lengthNomeFicheiro, f);
-        printf("%s\n", nomeFicheiro);
 
         ft = fopen(nomeFicheiro, "rb");
         if (!ft)
             return INSUCESSO;
 
         TABELA* T = Criar_Tabela(BD, nomeTabela);
+
 
 
         numCampos = 0;
@@ -652,7 +640,8 @@ int Importar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *fich_dat)
         fread(&numRegistos, sizeof(int), 1, ft);
         for (size_t i = 0; i < numRegistos; i++)
         {
-            char* valores = malloc(sizeof(char) * 8);
+            char* valores = malloc(sizeof(char) * 255);
+            strcpy(valores, "");
             for (size_t k = 0; k < numCampos; k++)
             {
                 int lengthValor;
@@ -662,21 +651,18 @@ int Importar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *fich_dat)
                 fread(valor, sizeof(char), lengthValor, ft);
 
                 // Concat valor into valores with ';' separator
-                valores = concatString(valores, valor);
+                strcat(valores, valor);
 
-                if(i == numCampos - 1)
-                    valores = concatString(valores, ";");
+                if(k != numCampos - 1)
+                    strcat(valores, ";");
 
             }
 
             Add_Valores_Tabela(T, valores);
         }
 
-        Mostrar_Tabela(T);
-
         fclose(ft);
     }
-
 
     fclose(f);
 
