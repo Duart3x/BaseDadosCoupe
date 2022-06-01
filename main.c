@@ -5,7 +5,7 @@
 
 #include "BDadosCoupe.h"
 
-BDadosCoupe *SelectBDCoup(ListaGenerica *X,int op)
+BDadosCoupe *SelectBDCoup(ListaGenerica *X, int op)
 {
 
     NOG *aux = X->Inicio;
@@ -15,40 +15,44 @@ BDadosCoupe *SelectBDCoup(ListaGenerica *X,int op)
     while (aux != NULL)
     {
         bd = aux->Info;
-        if (i==op-1)
+        if (i == op - 1)
         {
             return bd;
         }
         aux = aux->Prox;
         i++;
-    }  
+    }
     return NULL;
 }
-TABELA *SelectedTable(BDadosCoupe *BD,int op){
-    NOG *aux=BD->LTabelas->Inicio;
-    TABELA *T=NULL;
-    int i=0;
-    while(aux!=NULL){
-        T=aux->Info;
-        if(i==op-1){
+TABELA *SelectedTable(BDadosCoupe *BD, int op)
+{
+    NOG *aux = BD->LTabelas->Inicio;
+    TABELA *T = NULL;
+    int i = 0;
+    while (aux != NULL)
+    {
+        T = aux->Info;
+        if (i == op - 1)
+        {
             return T;
         }
-        aux=aux->Prox;
+        aux = aux->Prox;
         i++;
     }
 }
-char **listabasedados(ListaGenerica *X){
-     BDadosCoupe *BD3 = NULL;
+char **listabasedados(ListaGenerica *X)
+{
+    BDadosCoupe *BD3 = NULL;
     // percorrer listagenerica
     NOG *aux = X->Inicio;
     int nel = X->NEL;
-    char **listaBDs= malloc(sizeof(char) * nel);
+    char **listaBDs = malloc(sizeof(char) * nel);
     int i = 0;
 
     while (aux != NULL)
     {
         BD3 = aux->Info;
-        listaBDs[i] = malloc(sizeof(char) * (strlen(BD3->NOME_BDADOS)+1));
+        listaBDs[i] = malloc(sizeof(char) * (strlen(BD3->NOME_BDADOS) + 1));
         strcpy(listaBDs[i], BD3->NOME_BDADOS);
         printf("%s\n", listaBDs[i]);
         aux = aux->Prox;
@@ -56,24 +60,24 @@ char **listabasedados(ListaGenerica *X){
     }
     return listaBDs;
 }
-char** listanometabelas(BDadosCoupe *BD){
+char **listanometabelas(BDadosCoupe *BD)
+{
     NOG *aux = BD->LTabelas->Inicio;
     TABELA *T = NULL;
     int nel = BD->LTabelas->NEL;
-    char **listaBDs= malloc(sizeof(char) * nel);
+    char **listaBDs = malloc(sizeof(char) * nel);
     int i = 0;
 
     while (aux != NULL)
     {
-        T= aux->Info;
-        listaBDs[i] = malloc(sizeof(char) * (strlen(T->NOME_TABELA)+1));
-        strcpy(listaBDs[i],T->NOME_TABELA);
+        T = aux->Info;
+        listaBDs[i] = malloc(sizeof(char) * (strlen(T->NOME_TABELA) + 1));
+        strcpy(listaBDs[i], T->NOME_TABELA);
         printf("%s\n", listaBDs[i]);
         aux = aux->Prox;
         i++;
     }
     return listaBDs;
-
 }
 int main()
 {
@@ -153,16 +157,16 @@ int main()
 
     system("pause");*/
 
-    BDadosCoupe *SelectedBD=NULL;
+    BDadosCoupe *SelectedBD = NULL;
     BDadosCoupe *BD = NULL;
 
-    char *menu[] = {"Criar a Base de Dados",
-                    "Entrar na Base de Dados",
+    char *menu[] = {"Criar uma Base de Dados",
+                    "Entrar numa Base de Dados",
                     "Importar Base de Dados",
                     "Exportar Base de Dados",
                     "\033[31mSAIR\033[0m"};
     char *expoptions[] = {"Excel(.cvs)",
-                          "Binário(.dat)",
+                          "Binario(.dat)",
                           "\033[31mVoltar\033[0m"};
     char *submenu[] = {"Criar Tabela",
                        "Adicionar dados a uma tabela",
@@ -210,17 +214,17 @@ int main()
             else
             {
                 system("cls");
-                
+
                 int lbds = 0;
-                p=listabasedados(BDS);
+                p = listabasedados(BDS);
                 lbds = drawMenu(p, BDS->NEL, "Escolha a Base de Dados");
-                SelectedBD=SelectBDCoup(BDS, lbds);
+                SelectedBD = SelectBDCoup(BDS, lbds);
                 printf("Base de Dados: %s\n", SelectedBD->NOME_BDADOS);
                 subop = drawMenu(submenu, 8, "Menu Base Dados");
                 switch (subop)
                 {
                 case 1:
-                    
+
                     char *nomeTabela = (char *)malloc(sizeof(char) * 50);
                     char *nomeCampo = (char *)malloc(sizeof(char) * 50);
                     char *tipoCampo = (char *)malloc(sizeof(char) * 50);
@@ -238,14 +242,14 @@ int main()
                         scanf("%s", tipoCampo);
                         Add_Campo_Tabela(T, nomeCampo, tipoCampo);
                     }
-                    
+
                     break;
 
                 case 2:
-                    int ltbs=0;
-                    p=listanometabelas(SelectedBD);
+                    int ltbs = 0;
+                    p = listanometabelas(SelectedBD);
                     ltbs = drawMenu(p, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
-                    T=SelectedTable(SelectedBD, ltbs);
+                    T = SelectedTable(SelectedBD, ltbs);
                     /*printf("Nome da Tabela: ");
                     //scanf("%s", nomeTabela);
                     if (Pesquisar_Tabela(SelectedBD, nomeTabela) == 0)
@@ -255,34 +259,34 @@ int main()
                     }
                     else
                     {*/
-                        int nRegistos;
-                        char *dados = (char *)malloc(sizeof(char) * 100);
-                        printf("Quantos registos pretende adicionar?\n");
-                        scanf("%d", &nRegistos);
-                        printf("Adicione os dados delimitados por ';'\n");
-                        /*if(Pesquisar_Tabela(SelectedBD, T->NOME_TABELA) == 0)
-                        {
-                             printf("Não existe a tabela %s\n", nomeTabela);
-                        }
-                        else
-                        {*/
-                            for (size_t i = 0; i < nRegistos; i++)
-                            {
-                                printf("Dados: ");
-                                scanf("%s", dados);
-                                printf("%d",Add_Valores_Tabela_BDados(SelectedBD, T->NOME_TABELA, dados));
+                    int nRegistos;
+                    char *dados = (char *)malloc(sizeof(char) * 100);
+                    printf("Quantos registos pretende adicionar?\n");
+                    scanf("%d", &nRegistos);
+                    printf("Adicione os dados delimitados por ';'\n");
+                    /*if(Pesquisar_Tabela(SelectedBD, T->NOME_TABELA) == 0)
+                    {
+                         printf("Não existe a tabela %s\n", nomeTabela);
+                    }
+                    else
+                    {*/
+                    for (size_t i = 0; i < nRegistos; i++)
+                    {
+                        printf("Dados: ");
+                        scanf("%s", dados);
+                        printf("%d", Add_Valores_Tabela_BDados(SelectedBD, T->NOME_TABELA, dados));
+                    }
 
-                            }
-                           
-                            system("pause");
-                        //}
-                        
-                        free(dados);
+                    system("pause");
+                    //}
+
+                    free(dados);
                     //}
                     break;
                 case 3:
                     if (SelectedBD->LTabelas->Inicio == NULL)
-                    {   printf("Não existem Tabelas\n");
+                    {
+                        printf("Não existem Tabelas\n");
                         system("pause");
                     }
                     else
@@ -302,11 +306,10 @@ int main()
                     }
                     else
                     {
-                       DROP_TABLE(SelectedBD, nomeTabela);
-                      
+                        DROP_TABLE(SelectedBD, nomeTabela);
                     }
                     free(nomeTabela);
-                    
+
                     break;
                 case 5:
                     break;
@@ -318,55 +321,86 @@ int main()
                     break;
                 }
             }
-                askToContinue = false;
-                break;
+            askToContinue = false;
+            break;
 
         case 3:
-                system("cls");
-                int lbds = 0;
-                p=listabasedados(BDS);
-                lbds = drawMenu(p, BDS->NEL, "Escolha a Base de Dados");
-                SelectedBD=SelectBDCoup(BDS, lbds);
-                expop=drawMenu(expoptions, 3, "Menu Importar");
-                char * fich_name=SelectedBD->NOME_BDADOS;
-                switch (expop)
+            system("cls");
+            int lbds = 0;
+
+            expop = drawMenu(expoptions, 3, "Menu Importar");
+            char *fich_name = (char *)malloc(sizeof(char) * 50);
+
+            switch (expop)
+            {
+            case 1:
+            {
+                printf("Nome do ficheiro (****.csv): ");
+               scanf("%s", fich_name);
+                char *bdName = malloc(sizeof(char) * strlen(fich_name) + 1);
+                strcpy(bdName, fich_name);
+
+                BDadosCoupe *ImportBD = Criar_BDados(bdName, "1.0");
+                strcat(fich_name, ".csv");
+                if(Importar_BDados_Excel(ImportBD, fich_name)==SUCESSO)
+                    AddFimLG(BDS, ImportBD);
+                else
                 {
-                case 1:
-                    strcat(fich_name,".csv");
-                    Importar_BDados_Excel(SelectedBD, fich_name);  
-                    break;
-                case 2:
-                    strcat(fich_name,".bin");
-                    Importar_BDados_Ficheiro_Binario(SelectedBD, fich_name);
-                    break;
-                case 3:
-                    break;
-                
+                    printf("Erro ao importar o ficheiro\n");
+                    free(ImportBD);
+                    system("pause");
                 }
+            }
+
+            case 2:
+                printf("Nome do ficheiro (****.dat): ");
+                scanf("%s", fich_name);
+                char *bdName = malloc(sizeof(char) * strlen(fich_name) + 1);
+                strtok(fich_name, ".");
+                strcpy(bdName, fich_name);
+
+                BDadosCoupe *ImportBD = Criar_BDados(bdName, "1.0");
+                strcat(fich_name, ".dat");
+                if(Importar_BDados_Ficheiro_Binario(ImportBD, fich_name)==SUCESSO)
+                {
+                    AddFimLG(BDS, ImportBD);
+                    printf("Tabela importada com sucesso\n");
+                    system("pause");
+                }
+                else
+                {
+                    printf("Erro ao importar o ficheiro\n");
+                    free(ImportBD);
+                    system("pause");
+                }
+                    
+                break;
+            case 3:
+                break;
+            }
             free(fich_name);
             askToContinue = false;
             break;
 
         case 4:
-                system("cls");
-                p=listabasedados(BDS);
-                lbds = drawMenu(p, BDS->NEL, "Escolha a Base de Dados");
-                SelectedBD=SelectBDCoup(BDS, lbds);
-                expop=drawMenu(expoptions, 3, "Menu Exportar");
-                switch (expop)
-                {
-                case 1:
-                    Exportar_BDados_Excel(SelectedBD);
-                    break;
-                case 2:
-                    char * fich_name=SelectedBD->NOME_BDADOS;
-                    strcat(fich_name,".bin");
-                    Exportar_BDados_Ficheiro_Binario(SelectedBD,fich_name);
-                    break;
-                case 3:
-                    break;
-                
-                }
+            system("cls");
+            p = listabasedados(BDS);
+            lbds = drawMenu(p, BDS->NEL, "Escolha a Base de Dados");
+            SelectedBD = SelectBDCoup(BDS, lbds);
+            expop = drawMenu(expoptions, 3, "Menu Exportar");
+            switch (expop)
+            {
+            case 1:
+                Exportar_BDados_Excel(SelectedBD);
+                break;
+            case 2:
+                char *fich_name = SelectedBD->NOME_BDADOS;
+                strcat(fich_name, ".bin");
+                Exportar_BDados_Ficheiro_Binario(SelectedBD, fich_name);
+                break;
+            case 3:
+                break;
+            }
             askToContinue = false;
             break;
 
@@ -388,4 +422,3 @@ int main()
 
     return 0;
 }
-
