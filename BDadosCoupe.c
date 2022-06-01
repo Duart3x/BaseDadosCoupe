@@ -591,6 +591,8 @@ int Exportar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *fich_dat)
 int Importar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *fich_dat)
 {
     FILE *f = fopen(fich_dat, "rb");
+    if(!f)
+        return INSUCESSO;
     FILE *ft = NULL;
 
     int numTabelas;
@@ -616,8 +618,6 @@ int Importar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *fich_dat)
             return INSUCESSO;
 
         TABELA* T = Criar_Tabela(BD, nomeTabela);
-
-
 
         numCampos = 0;
         fread(&numCampos, sizeof(int), 1, ft);

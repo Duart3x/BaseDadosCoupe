@@ -190,13 +190,13 @@ int main()
     BDadosCoupe *SelectedBD = NULL;
     BDadosCoupe *BD = NULL;
 
-    char *menu[] = {"Criar a Base de Dados",
-                    "Entrar na Base de Dados",
+    char *menu[] = {"Criar uma Base de Dados",
+                    "Entrar numa Base de Dados",
                     "Importar Base de Dados",
                     "Exportar Base de Dados",
                     "\033[31mSAIR\033[0m"};
     char *expoptions[] = {"Excel(.cvs)",
-                          "Binário(.dat)",
+                          "Binario(.dat)",
                           "\033[31mVoltar\033[0m"};
     char *submenu[] = {"Criar Tabela",
                        "Adicionar dados a uma tabela",
@@ -250,6 +250,7 @@ int main()
             {
                 system("cls");
 
+                int lbds = 0;
                 p = listabasedados(BDS);
                 lbds = drawMenu(p, BDS->NEL, "Escolha a Base de Dados");
                 SelectedBD = SelectBDCoup(BDS, lbds);
@@ -259,6 +260,9 @@ int main()
                 {
                 case 1:
 
+                    char *nomeTabela = (char *)malloc(sizeof(char) * 50);
+                    char *nomeCampo = (char *)malloc(sizeof(char) * 50);
+                    char *tipoCampo = (char *)malloc(sizeof(char) * 50);
                     int nCampos = 0;
                     printf("Nome da Tabela: ");
                     scanf("%s", nomeTabela);
@@ -339,21 +343,53 @@ int main()
         case 3:
             system("cls");
             int lbds = 0;
-            p = listabasedados(BDS);
-            lbds = drawMenu(p, BDS->NEL, "Escolha a Base de Dados");
-            SelectedBD = SelectBDCoup(BDS, lbds);
 
             expop = drawMenu(expoptions, 3, "Menu Importar");
-            char *fich_name = SelectedBD->NOME_BDADOS;
+            char *fich_name = (char *)malloc(sizeof(char) * 50);
+
             switch (expop)
             {
             case 1:
+            {
+                printf("Nome do ficheiro (****.csv): ");
+               scanf("%s", fich_name);
+                char *bdName = malloc(sizeof(char) * strlen(fich_name) + 1);
+                strcpy(bdName, fich_name);
+
+                BDadosCoupe *ImportBD = Criar_BDados(bdName, "1.0");
                 strcat(fich_name, ".csv");
-                Importar_BDados_Excel(SelectedBD, fich_name);
-                break;
+                if(Importar_BDados_Excel(ImportBD, fich_name)==SUCESSO)
+                    AddFimLG(BDS, ImportBD);
+                else
+                {
+                    printf("Erro ao importar o ficheiro\n");
+                    free(ImportBD);
+                    system("pause");
+                }
+            }
+
             case 2:
-                strcat(fich_name, ".bin");
-                Importar_BDados_Ficheiro_Binario(SelectedBD, fich_name);
+                printf("Nome do ficheiro (****.dat): ");
+                scanf("%s", fich_name);
+                char *bdName = malloc(sizeof(char) * strlen(fich_name) + 1);
+                strtok(fich_name, ".");
+                strcpy(bdName, fich_name);
+
+                BDadosCoupe *ImportBD = Criar_BDados(bdName, "1.0");
+                strcat(fich_name, ".dat");
+                if(Importar_BDados_Ficheiro_Binario(ImportBD, fich_name)==SUCESSO)
+                {
+                    AddFimLG(BDS, ImportBD);
+                    printf("Tabela importada com sucesso\n");
+                    system("pause");
+                }
+                else
+                {
+                    printf("Erro ao importar o ficheiro\n");
+                    free(ImportBD);
+                    system("pause");
+                }
+                    
                 break;
             case 3:
                 break;
@@ -374,9 +410,7 @@ int main()
                 Exportar_BDados_Excel(SelectedBD);
                 break;
             case 2:
-
                 char *fich_name = SelectedBD->NOME_BDADOS;
-
                 strcat(fich_name, ".bin");
                 Exportar_BDados_Ficheiro_Binario(SelectedBD, fich_name);
                 break;
