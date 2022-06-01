@@ -659,11 +659,12 @@ int Importar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *fich_dat)
             }
 
             Add_Valores_Tabela(T, valores);
+            free(valores);
         }
 
         fclose(ft);
     }
-
+    
     fclose(f);
 
     return SUCESSO;
