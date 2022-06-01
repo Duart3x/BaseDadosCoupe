@@ -83,7 +83,7 @@ char **listanomecampos(TABELA *T)
 {
     NOG *aux = T->LCampos->Inicio;
     CAMPO *C = NULL;
-    int nel = T->LCampos->Inicio;
+    int nel = T->LCampos->NEL;
     char **listanomeCampos = malloc(sizeof(char) * nel);
     int i = 0;
 
@@ -320,7 +320,7 @@ int main()
                     break;
 
                 case 4:
-                    int ltbs = 0;
+                    ltbs = 0;
                     p = listanometabelas(SelectedBD);
                     ltbs = drawMenu(p, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
                     T = SelectedTable(SelectedBD, ltbs);
