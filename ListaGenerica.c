@@ -114,3 +114,34 @@ int RemoveLG(ListaGenerica *L, void *X, int (*fcomp)(void *, void *))
     }
     return INSUCESSO;
 }
+
+int RemoveLG_Index(ListaGenerica *L, int Index, void (*func)(void *))
+{
+    if (L == NULL) return INSUCESSO;
+    if (!L->Inicio) return INSUCESSO;
+    if (Index < 0 || Index >= L->NEL) return INSUCESSO;
+    NOG *P = L->Inicio;
+    int i = 0;
+    while (P != NULL)
+    {
+        if (i == Index)
+        {
+            if (P->Ant)
+                P->Ant->Prox = P->Prox;
+            else
+                L->Inicio = P->Prox;
+            if (P->Prox)
+                P->Prox->Ant = P->Ant;
+            else
+                L->Fim = P->Ant;
+            
+            func(P->Info);
+            free(P);
+            L->NEL--;
+            return SUCESSO;
+        }
+        P = P->Prox;
+        i++;
+    }
+    return INSUCESSO;
+}

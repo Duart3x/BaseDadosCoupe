@@ -29,6 +29,7 @@ void MostrarLG(ListaGenerica *L, void (*fshow)(void *));
 void MostrarRevLG(ListaGenerica *L, void (*fshow)(void *));
 int AddFimLG(ListaGenerica *L, void *X);
 int RemoveLG(ListaGenerica *L, void *X, int (*fcomp)(void *, void *));
+int RemoveLG_Index(ListaGenerica *L, int Index, void (*func)(void *));
 
 #endif // LISTAGENERICA_H_INCLUDED
 

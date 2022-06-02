@@ -148,7 +148,7 @@ void EntrarBaseDados(ListaGenerica *BDS)
         {
             sprintf(title, "Menu Base Dados (%s)", SelectedBD->NOME_BDADOS);
 
-            int op = drawMenu(submenu, 9, title);
+            int op = drawMenu(submenu, 10, title);
             switch (op)
             {
                 case 1:
@@ -264,6 +264,12 @@ void EntrarBaseDados(ListaGenerica *BDS)
             }
         } while (exitMenu == false);
     }
+    free(nomeCampo);
+    free(dadosconcat);
+    free(dados);
+    free(nomeTabela);
+    free(tipoCampo);
+    free(lncampos);
 }
 
 int main()
