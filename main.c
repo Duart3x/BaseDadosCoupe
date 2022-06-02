@@ -121,7 +121,7 @@ void EntrarBaseDados(ListaGenerica *BDS)
     char *nomeTabela = (char *)malloc(sizeof(char) * 50);
     char *tipoCampo = (char *)malloc(sizeof(char) * 50);
     int option = 0;
-    char **p;
+    char **arrayOpcoes;
     char **lncampos;
     int ncampos = 0;
     bool exitMenu = false;
@@ -136,18 +136,16 @@ void EntrarBaseDados(ListaGenerica *BDS)
     {
         system("cls");
 
-        p = listabasedados(BDS);
-        option = drawMenu(p, BDS->NEL, "Escolha a Base de Dados");
+        arrayOpcoes = listabasedados(BDS);
+        option = drawMenu(arrayOpcoes, BDS->NEL, "Escolha a Base de Dados");
+        for (size_t i = 0; i < BDS->NEL; i++) free(arrayOpcoes[i]); free(arrayOpcoes);
+
         SelectedBD = SelectBDCoup(BDS, option);
         printf("Base de Dados: %s\n", SelectedBD->NOME_BDADOS);
-        
+        char* title = malloc(sizeof(char) * (20+ strlen(SelectedBD->NOME_BDADOS)));
+
         do
         {
-           
-        
-        
-            
-            char* title = malloc(sizeof(char) * (20+ strlen(SelectedBD->NOME_BDADOS)));
             sprintf(title, "Menu Base Dados (%s)", SelectedBD->NOME_BDADOS);
 
             int op = drawMenu(submenu, 9, title);
@@ -174,8 +172,10 @@ void EntrarBaseDados(ListaGenerica *BDS)
                     option = 0;
                     ncampos = 0;
 
-                    p = listanometabelas(SelectedBD);
-                    option = drawMenu(p, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
+                    arrayOpcoes = listanometabelas(SelectedBD);
+                    option = drawMenu(arrayOpcoes, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
+                    for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++) free(arrayOpcoes[i]); free(arrayOpcoes);
+
                     T = SelectedTable(SelectedBD, option);
                     lncampos = listanomecampos(T);
                     ncampos = T->LCampos->NEL;
@@ -210,8 +210,11 @@ void EntrarBaseDados(ListaGenerica *BDS)
 
                 case 4:
                     option = 0;
-                    p = listanometabelas(SelectedBD);
-                    option = drawMenu(p, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
+                    arrayOpcoes = listanometabelas(SelectedBD);
+                    option = drawMenu(arrayOpcoes, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
+                    for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++) free(arrayOpcoes[i]); free(arrayOpcoes);
+
+
                     T = SelectedTable(SelectedBD, option);
                     DROP_TABLE(SelectedBD, nomeTabela);
                     free(nomeTabela);
@@ -223,8 +226,10 @@ void EntrarBaseDados(ListaGenerica *BDS)
                 case 7:
                     break;
                 case 8:
-                    p = listanometabelas(SelectedBD);
-                    option = drawMenu(p, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
+                    arrayOpcoes = listanometabelas(SelectedBD);
+                    option = drawMenu(arrayOpcoes, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
+                    for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++) free(arrayOpcoes[i]); free(arrayOpcoes);
+
                     T = SelectedTable(SelectedBD, option);
                     printf("Quantos campos pretende criar? ");
                     scanf("%d", &ncampos);
@@ -238,14 +243,24 @@ void EntrarBaseDados(ListaGenerica *BDS)
                     }
                     break;
                 case 9:
-                    p = listanometabelas(SelectedBD);
-                    option = drawMenu(p, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
+                    arrayOpcoes = listanometabelas(SelectedBD);
+                    option = drawMenu(arrayOpcoes, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
+                    for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++) free(arrayOpcoes[i]); free(arrayOpcoes);
+
                     T = SelectedTable(SelectedBD, option);
                     Mostrar_Tabela(T);
                     system("pause");
                     break;
                 case 10:
+                    exitMenu = true;
                     break;
+            }
+
+            if (!exitMenu && askToContinue)
+            {
+                printf("\n\n");
+                printf("  \033[7mPressione qualquer tecla para continuar...\033[0m");
+                system("cls");
             }
         } while (exitMenu == false);
     }
