@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "utils.h"
-
+#include <conio.h>
 #include "BDadosCoupe.h"
 
 BDadosCoupe *SelectBDCoup(ListaGenerica *X, int op)
@@ -125,6 +125,7 @@ void EntrarBaseDados(ListaGenerica *BDS)
     char **lncampos;
     int ncampos = 0;
     bool exitMenu = false;
+    NOG* NC = NULL;
 
     if (BDS->Inicio == NULL)
     {
@@ -138,7 +139,8 @@ void EntrarBaseDados(ListaGenerica *BDS)
 
         arrayOpcoes = listabasedados(BDS);
         option = drawMenu(arrayOpcoes, BDS->NEL, "Escolha a Base de Dados");
-        for (size_t i = 0; i < BDS->NEL; i++) free(arrayOpcoes[i]); free(arrayOpcoes);
+        for (size_t i = 0; i < BDS->NEL; i++) free(arrayOpcoes[i]);
+        //free(arrayOpcoes);
 
         SelectedBD = SelectBDCoup(BDS, option);
         printf("Base de Dados: %s\n", SelectedBD->NOME_BDADOS);
@@ -146,6 +148,7 @@ void EntrarBaseDados(ListaGenerica *BDS)
 
         do
         {
+            askToContinue = true;
             sprintf(title, "Menu Base Dados (%s)", SelectedBD->NOME_BDADOS);
 
             int op = drawMenu(submenu, 10, title);
@@ -153,19 +156,46 @@ void EntrarBaseDados(ListaGenerica *BDS)
             {
                 case 1:
                     system("cls");
-                    printf("Nome da Tabela: ");
+                    printf("\n  \033[4mCriar tabela\033[0m\n\n");
+                    printf("  Nome da Tabela: ");
                     scanf("%s", nomeTabela);
                     T = Criar_Tabela(SelectedBD, nomeTabela);
-                    printf("Quantos campos pretende criar? ");
+                    printf("  Quantos campos pretende criar? ");
                     scanf("%d", &ncampos);
                     for (size_t i = 0; i < ncampos; i++)
                     {
-                        printf("Nome do campo: ");
+                        printf("\n Campo [%d]", i + 1);
+                        printf("\n  Nome: ");
                         scanf("%s", nomeCampo);
-                        printf("Tipo do campo: ");
+                        printf("  Tipo (INT, STRING, CHAR, FLOAT): ");
                         scanf("%s", tipoCampo);
-                        Add_Campo_Tabela(T, nomeCampo, tipoCampo);
+                        strToUpper(tipoCampo);
+                        if(strcmp(tipoCampo, "INT") != 0 && strcmp(tipoCampo, "STRING") != 0 && strcmp(tipoCampo, "CHAR") != 0 && strcmp(tipoCampo, "FLOAT") != 0)
+                        {
+                            printf("\n  Tipo invalido!\n");
+                            i--;
+                        }
+                        else{
+                            Add_Campo_Tabela(T, nomeCampo, tipoCampo);
+                        }
                     }
+
+
+                    system("cls");
+                    printf("\n  \033[32mTabela criada com sucesso!\033[0m\n");
+                    
+                    printf("\n  \033[4mCampos da Tabela [\033[1m%s\033[0m]\033[0m\n\n", T->NOME_TABELA);
+
+                    printf("  \033[4mNome\033[0m\t\t\033[4mTipo\033[0m\n");
+                    NC = T->LCampos->Inicio;
+                    while (NC)
+                    {
+                        CAMPO *C = NC->Info;
+                        printf("  %s\t\t%s\n", C->NOME_CAMPO, C->TIPO);
+                        NC = NC->Prox;
+                    }
+                    
+
 
                     break;
                 case 2:
@@ -174,15 +204,17 @@ void EntrarBaseDados(ListaGenerica *BDS)
 
                     arrayOpcoes = listanometabelas(SelectedBD);
                     option = drawMenu(arrayOpcoes, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
-                    for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++) free(arrayOpcoes[i]); free(arrayOpcoes);
+                    for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++) free(arrayOpcoes[i]); //free(arrayOpcoes);
 
                     T = SelectedTable(SelectedBD, option);
                     lncampos = listanomecampos(T);
+                    
+                    
                     ncampos = T->LCampos->NEL;
                     strcpy(dadosconcat, "");
                     for (size_t i = 0; i < ncampos; i++)
                     {
-                        printf("Campo %s :", lncampos[i]);
+                        printf("  Campo [%s]: ", lncampos[i]);
                         scanf("%s", dados);
                         strcat(dadosconcat, dados);
                         if (i != ncampos - 1)
@@ -190,21 +222,21 @@ void EntrarBaseDados(ListaGenerica *BDS)
                             strcat(dadosconcat, ";");
                         }
                     }
-                    printf("%s", dadosconcat);
+                    
                     Add_Valores_Tabela(T, dadosconcat);
-                    system("pause");
+                    for (size_t i = 0; i < T->LCampos->NEL; i++) free(lncampos[i]); //free(arrayOpcoes);
 
                     break;
                 case 3:
                     if (SelectedBD->LTabelas->Inicio == NULL)
                     {
-                        printf("Não existem Tabelas\n");
-                        system("pause");
+                        printf("Nao existem Tabelas\n");
+                        askToContinue = true;
                     }
                     else
                     {
                         Mostrar_BDados(SelectedBD);
-                        system("pause");
+                        askToContinue = true;
                     }
                     break;
 
@@ -212,7 +244,7 @@ void EntrarBaseDados(ListaGenerica *BDS)
                     option = 0;
                     arrayOpcoes = listanometabelas(SelectedBD);
                     option = drawMenu(arrayOpcoes, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
-                    for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++) free(arrayOpcoes[i]); free(arrayOpcoes);
+                    for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++) free(arrayOpcoes[i]); //free(arrayOpcoes);
 
 
                     T = SelectedTable(SelectedBD, option);
@@ -228,7 +260,7 @@ void EntrarBaseDados(ListaGenerica *BDS)
                 case 8:
                     arrayOpcoes = listanometabelas(SelectedBD);
                     option = drawMenu(arrayOpcoes, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
-                    for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++) free(arrayOpcoes[i]); free(arrayOpcoes);
+                    for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++) free(arrayOpcoes[i]); //free(arrayOpcoes);
 
                     T = SelectedTable(SelectedBD, option);
                     printf("Quantos campos pretende criar? ");
@@ -241,15 +273,17 @@ void EntrarBaseDados(ListaGenerica *BDS)
                         scanf("%s", tipoCampo);
                         Add_Campo_Tabela(T, nomeCampo, tipoCampo);
                     }
+                    askToContinue = false;
                     break;
                 case 9:
                     arrayOpcoes = listanometabelas(SelectedBD);
                     option = drawMenu(arrayOpcoes, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
-                    for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++) free(arrayOpcoes[i]); free(arrayOpcoes);
+                    for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++) //free(arrayOpcoes[i]); 
+                    free(arrayOpcoes);
 
                     T = SelectedTable(SelectedBD, option);
                     Mostrar_Tabela(T);
-                    system("pause");
+                    askToContinue = true;
                     break;
                 case 10:
                     exitMenu = true;
@@ -260,6 +294,7 @@ void EntrarBaseDados(ListaGenerica *BDS)
             {
                 printf("\n\n");
                 printf("  \033[7mPressione qualquer tecla para continuar...\033[0m");
+                getch();
                 system("cls");
             }
         } while (exitMenu == false);
@@ -269,7 +304,6 @@ void EntrarBaseDados(ListaGenerica *BDS)
     free(dados);
     free(nomeTabela);
     free(tipoCampo);
-    free(lncampos);
 }
 
 int main()
@@ -345,14 +379,15 @@ int main()
         case 1:
         {
             // CriarBaseDadosMenu();
-            printf("Nome Base de Dados: ");
+            printf("\n  \033[4mCriar Base Dados\033[0m\n\n");
+            printf("  Nome Base de Dados: ");
             scanf("%s", nomeBD);
-            printf("Versão Base de Dados: ");
+            printf("  Versao Base de Dados: ");
             scanf("%s", versaoBD);
             BD = Criar_BDados(nomeBD, versaoBD);
             AddFimLG(BDS, BD);
 
-            askToContinue = false;
+            askToContinue = true;
             break;
         }
         case 2:
@@ -449,6 +484,7 @@ int main()
         {
             printf("\n\n");
             printf("  \033[7mPressione qualquer tecla para continuar...\033[0m");
+            getch();
             system("cls");
         }
     } while (exitMenu == false);

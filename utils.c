@@ -84,14 +84,13 @@ bool contaisNumber(char *str)
     return false;
 }
 
-char *strToUpper(char *str)
+void strToUpper(char *str)
 {
     int i;
     for (i = 0; i < strlen(str); i++)
     {
         str[i] = toupper(str[i]);
     }
-    return str;
 }
 
 bool isNumber(char *value)

@@ -31,7 +31,7 @@ int getNumberOfLinesInFile(FILE *f);
 FILE *openFile(char *fileName, char *mode);
 char* replaceChar(char* str, char find, char replace);
 bool contaisNumber(char *str);
-char* strToUpper(char *str);
+void strToUpper(char *str);
 bool isNumber(char* value);
 bool checkIfArrayContainsElement(int* array,int length, int element);
 int drawMenu(char *opcoes[], int numOpcoes, char *title);
