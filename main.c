@@ -222,10 +222,11 @@ int main()
         {
         case 1:
         {
-
-            printf("Nome Base de Dados: ");
+            system("cls");
+            printf("-----Criar Base de Dados-----");
+            printf("\n\nNome Base de Dados: ");
             scanf("%s", nomeBD);
-            printf("Versão Base de Dados: ");
+            printf("Versao Base de Dados: ");
             scanf("%s", versaoBD);
             BD = Criar_BDados(nomeBD, versaoBD);
             AddFimLG(BDS, BD);
@@ -253,6 +254,7 @@ int main()
                 switch (op)
                 {
                 case 1:
+                    system("cls");
                     printf("Nome da Tabela: ");
                     scanf("%s", nomeTabela);
                     T = Criar_Tabela(SelectedBD, nomeTabela);
