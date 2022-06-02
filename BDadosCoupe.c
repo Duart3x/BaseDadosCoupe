@@ -561,7 +561,7 @@ int Exportar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *fich_dat)
             while (NV)
             {
                 char *valor = (char *)NV->Info;
-               // strcat(valor, ";");
+                // strcat(valor, ";");
 
                 int length = strlen(valor) + 1;
 
@@ -591,13 +591,13 @@ int Exportar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *fich_dat)
 int Importar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *fich_dat)
 {
     FILE *f = fopen(fich_dat, "rb");
-    if(!f)
+    if (!f)
         return INSUCESSO;
     FILE *ft = NULL;
 
     int numTabelas;
     int numCampos;
-    int numRegistos; 
+    int numRegistos;
 
     fread(&numTabelas, sizeof(int), 1, f);
 
@@ -617,7 +617,7 @@ int Importar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *fich_dat)
         if (!ft)
             return INSUCESSO;
 
-        TABELA* T = Criar_Tabela(BD, nomeTabela);
+        TABELA *T = Criar_Tabela(BD, nomeTabela);
 
         numCampos = 0;
         fread(&numCampos, sizeof(int), 1, ft);
@@ -640,22 +640,21 @@ int Importar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *fich_dat)
         fread(&numRegistos, sizeof(int), 1, ft);
         for (size_t i = 0; i < numRegistos; i++)
         {
-            char* valores = malloc(sizeof(char) * 255);
+            char *valores = malloc(sizeof(char) * 255);
             strcpy(valores, "");
             for (size_t k = 0; k < numCampos; k++)
             {
                 int lengthValor;
                 fread(&lengthValor, sizeof(int), 1, ft);
 
-                char* valor = malloc(sizeof(char) * (lengthValor + 1));
+                char *valor = malloc(sizeof(char) * (lengthValor + 1));
                 fread(valor, sizeof(char), lengthValor, ft);
 
                 // Concat valor into valores with ';' separator
                 strcat(valores, valor);
 
-                if(k != numCampos - 1)
+                if (k != numCampos - 1)
                     strcat(valores, ";");
-
             }
 
             Add_Valores_Tabela(T, valores);
@@ -664,7 +663,7 @@ int Importar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *fich_dat)
 
         fclose(ft);
     }
-    
+
     fclose(f);
 
     return SUCESSO;
@@ -724,25 +723,27 @@ int SELECT(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
     if (!T)
         return INSUCESSO;
 
-    NOG* NR = T->LRegistos->Inicio;
-    NOG* NC = T->LCampos->Inicio;
+    NOG *NR = T->LRegistos->Inicio;
+    NOG *NC = T->LCampos->Inicio;
+
+    MostrarLG(T->LCampos, Mostra_Valor);
+    printf("\n");
 
     int campoIndex = -1;
     int aux = 0;
 
     while (NC)
     {
-        CAMPO* C = (CAMPO *)NC->Info;
+        CAMPO *C = (CAMPO *)NC->Info;
 
         if (strcmp(C->NOME_CAMPO, nome_campo) == 0)
             campoIndex = aux;
-            
 
         aux++;
         NC = NC->Prox;
     }
 
-    if(campoIndex == -1)
+    if (campoIndex == -1)
         return INSUCESSO;
 
     aux = 0;
@@ -753,41 +754,42 @@ int SELECT(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
 
     while (NR)
     {
-        REGISTO* R = (REGISTO *)NR->Info;
-        NOG* NV = R->LValores->Inicio;
+        REGISTO *R = (REGISTO *)NR->Info;
+        NOG *NV = R->LValores->Inicio;
 
         aux = 0;
 
         while (NV)
         {
-            if(aux == campoIndex)
+            if (aux == campoIndex)
             {
-                char* valor = (char*) NV->Info;
-                if (f_condicao(valor, valor_comparacao) == 0) {
+                char *valor = (char *)NV->Info;
+                if (f_condicao(valor, valor_comparacao) == 0)
+                {
                     found = 1;
                     count++;
-                }  
+                }
             }
 
             aux++;
 
-            if(found)
+            if (found)
                 break;
 
             NV = NV->Prox;
         }
 
-        if(!found)
+        if (!found)
         {
             NR = NR->Prox;
             continue;
         }
 
         NV = R->LValores->Inicio;
-        
+
         MostrarLG(R->LValores, Mostra_Valor);
         printf("\n");
-        
+
         found = 0;
         NR = NR->Prox;
     }
@@ -798,8 +800,87 @@ int SELECT(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
 // O)	Remover todos os registos que obede�am a uma dada condi��o, a fun��o deve retornar o n�mero de registos removidos.
 int DELETE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), char *nome_campo, char *valor_comparacao)
 {
-    return SUCESSO;
+    if (!BD || !_tabela || !f_condicao || !nome_campo || !valor_comparacao)
+        return INSUCESSO;
+
+    TABELA *T = Pesquisar_Tabela(BD, _tabela);
+
+    if (!T)
+        return INSUCESSO;
+
+    NOG *NR = T->LRegistos->Inicio;
+    NOG *NC = T->LCampos->Inicio;
+
+    int campoIndex = -1;
+    int aux = 0;
+
+    while (NC)
+    {
+        CAMPO *C = (CAMPO *)NC->Info;
+
+        if (strcmp(C->NOME_CAMPO, nome_campo) == 0)
+            campoIndex = aux;
+
+        aux++;
+        NC = NC->Prox;
+    }
+
+    if (campoIndex == -1)
+        return INSUCESSO;
+
+    aux = 0;
+    int count = 0;
+    int found = 0;
+    int removeIndex = 0;
+
+    printf("  QUERY: DELETE * FROM %s WHERE %s = %s\n  Resultado(s):\n\n", _tabela, nome_campo, valor_comparacao);
+
+    while (NR)
+    {
+        REGISTO *R = (REGISTO *)NR->Info;
+        NOG *NV = R->LValores->Inicio;
+
+        aux = 0;
+
+        while (NV)
+        {
+            if (aux == campoIndex)
+            {
+                char *valor = (char *)NV->Info;
+                if (f_condicao(valor, valor_comparacao) == 0)
+                {
+                    found = 1;
+                    count++;
+                }
+            }
+
+            aux++;
+
+            if (found)
+                break;
+
+            NV = NV->Prox;
+        }
+
+        if (!found)
+        {
+            removeIndex++;
+            NR = NR->Prox;
+            continue;
+        }
+
+        //Sitio para remover 
+        //? Neste lugar a variavel R é o registo que deve ser removido
+        RemoveLG_Index(T->LRegistos, removeIndex, Destruir_Registo);
+
+        found = 0;
+        removeIndex++;
+        NR = NR->Prox;
+    }
+
+    return count;
 }
+
 // P)	Atualizar todos os registos da tabela onde o Campo � dado, que obede�am a uma dada condi��o, a fun��o deve retornar o n�mero de registos que foram atualizados.
 int UPDATE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), char *campo_comp, char *valor_campo_comp, char *nome_campo_update, char *valor_campo_update)
 {

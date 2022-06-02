@@ -220,6 +220,7 @@ int main()
     char *nomeTabela = (char *)malloc(sizeof(char) * 50);
     char *nomeCampo = (char *)malloc(sizeof(char) * 50);
     char *tipoCampo = (char *)malloc(sizeof(char) * 50);
+
     do
     {
         askToContinue = true;
@@ -328,6 +329,18 @@ int main()
                     free(nomeTabela);
                     break;
                 case 5:
+                    ltbs = 0;
+                    p = listanometabelas(SelectedBD);
+                    ltbs = drawMenu(p, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
+                    T = SelectedTable(SelectedBD, ltbs);
+                    
+                    printf("  Nome do campo que pretende comparar: ");
+                    scanf("%s", nomeCampo);
+
+                    printf("  Valor a comparar: ");
+                    scanf("%s", tipoCampo);
+
+                    printf("  N de registos: %d", SELECT(BD, T->NOME_TABELA, Compare, nomeCampo, tipoCampo));
                     break;
                 case 6:
                     break;
