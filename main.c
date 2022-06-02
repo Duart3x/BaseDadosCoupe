@@ -98,17 +98,6 @@ char **listanomecampos(TABELA *T)
     }
     return listanomeCampos;
 }
-// functin to concat arrays elements in one sigle element
-char *concat(char **array, int n)
-{
-    char *str = malloc(sizeof(char) * n);
-    int i = 0;
-    for (i = 0; i < n; i++)
-    {
-        strcat(str, array[i]);
-    }
-    return str;
-}
 int main()
 {
 
@@ -205,6 +194,8 @@ int main()
                        "SELECT",
                        "UPDATE",
                        "DELETE",
+                       "Adicionar campos a uma tabela",
+                       "Mostar uma tabela",
                        "\033[31mVoltar\033[0m"};
     bool exitMenu = false;
     bool askToContinue = false;
@@ -258,7 +249,7 @@ int main()
                 lbds = drawMenu(p, BDS->NEL, "Escolha a Base de Dados");
                 SelectedBD = SelectBDCoup(BDS, lbds);
                 printf("Base de Dados: %s\n", SelectedBD->NOME_BDADOS);
-                op = drawMenu(submenu, 8, "Menu Base Dados");
+                op = drawMenu(submenu, 9, "Menu Base Dados");
                 switch (op)
                 {
                 case 1:
@@ -298,11 +289,9 @@ int main()
                             strcat(dadosconcat, ";");
                         }
                     }
-                    // dadosconcat = concat(dados, ncampos);
                     printf("%s", dadosconcat);
                     Add_Valores_Tabela(T, dadosconcat);
                     system("pause");
-                    // free(dados);
 
                     break;
                 case 3:
@@ -333,6 +322,28 @@ int main()
                 case 7:
                     break;
                 case 8:
+                    p = listanometabelas(SelectedBD);
+                    lbds = drawMenu(p, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
+                    T = SelectedTable(SelectedBD, lbds);
+                    printf("Quantos campos pretende criar? ");
+                    scanf("%d", &ncampos);
+                    for (size_t i = 0; i < ncampos; i++)
+                    {
+                        printf("Nome do campo: ");
+                        scanf("%s", nomeCampo);
+                        printf("Tipo do campo: ");
+                        scanf("%s", tipoCampo);
+                        Add_Campo_Tabela(T, nomeCampo, tipoCampo);
+                    }
+                    break;
+                case 9:
+                    p = listanometabelas(SelectedBD);
+                    lbds = drawMenu(p, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
+                    T = SelectedTable(SelectedBD, lbds);
+                    Mostrar_Tabela(T);
+                    system("pause");
+                    break;
+                case 10:
                     break;
                 }
             }
@@ -341,8 +352,6 @@ int main()
 
         case 3:
             system("cls");
-            int lbds = 0;
-
             op = drawMenu(expoptions, 3, "Menu Importar");
             char *fich_name = (char *)malloc(sizeof(char) * 50);
 
