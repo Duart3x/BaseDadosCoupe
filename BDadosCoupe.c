@@ -103,6 +103,12 @@ int Add_Valores_Tabela(TABELA *T, char *dados)
 int Add_Valores_Tabela_BDados(BDadosCoupe *BD, char *nome_tabela, char *dados)
 {
     TABELA *T = Pesquisar_Tabela(BD, nome_tabela);
+    if(T == NULL)
+    {
+        printf("Tabela nao encontrada\n");
+        return INSUCESSO;
+    }
+    
     int res = Add_Valores_Tabela(T, dados);
     return res;
 }
@@ -110,7 +116,7 @@ int Add_Valores_Tabela_BDados(BDadosCoupe *BD, char *nome_tabela, char *dados)
 TABELA *Pesquisar_Tabela(BDadosCoupe *BD, char *nome_tabela)
 {
     if (BD == NULL)
-        return INSUCESSO;
+        return NULL;
 
     // TABELA *findedTable;
 
@@ -124,7 +130,7 @@ TABELA *Pesquisar_Tabela(BDadosCoupe *BD, char *nome_tabela)
 
         N = N->Prox;
     }
-    return INSUCESSO;
+    return NULL;
 }
 // G)	Mostrar uma Tabela
 void Mostrar_Tabela_NOME(BDadosCoupe *BD, char *tabela)
