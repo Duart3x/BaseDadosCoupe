@@ -150,7 +150,7 @@ void EntrarBaseDados(ListaGenerica *BDS)
             char* title = malloc(sizeof(char) * (20+ strlen(SelectedBD->NOME_BDADOS)));
             sprintf(title, "Menu Base Dados (%s)", SelectedBD->NOME_BDADOS);
 
-            int op = drawMenu(submenu, 9, title);
+            int op = drawMenu(submenu, 10, title);
             switch (op)
             {
                 case 1:
@@ -176,6 +176,7 @@ void EntrarBaseDados(ListaGenerica *BDS)
 
                     p = listanometabelas(SelectedBD);
                     option = drawMenu(p, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
+                    free(p);
                     T = SelectedTable(SelectedBD, option);
                     lncampos = listanomecampos(T);
                     ncampos = T->LCampos->NEL;
@@ -245,10 +246,18 @@ void EntrarBaseDados(ListaGenerica *BDS)
                     system("pause");
                     break;
                 case 10:
+                    exitMenu = true;
                     break;
             }
         } while (exitMenu == false);
     }
+    free(nomeCampo);
+    free(dadosconcat);
+    free(dados);
+    free(nomeTabela);
+    free(tipoCampo);
+    free(p);
+    free(lncampos);
 }
 
 int main()
