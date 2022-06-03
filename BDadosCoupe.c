@@ -103,12 +103,12 @@ int Add_Valores_Tabela(TABELA *T, char *dados)
 int Add_Valores_Tabela_BDados(BDadosCoupe *BD, char *nome_tabela, char *dados)
 {
     TABELA *T = Pesquisar_Tabela(BD, nome_tabela);
-    if(T == NULL)
+    if (T == NULL)
     {
         printf("Tabela nao encontrada\n");
         return INSUCESSO;
     }
-    
+
     int res = Add_Valores_Tabela(T, dados);
     return res;
 }
@@ -443,6 +443,10 @@ int Exportar_BDados_Excel(BDadosCoupe *BD)
 
     char *ficheiroTabelas = malloc(sizeof(char) * 250);
 
+    if (!NT)
+    {
+        return INSUCESSO;
+    }
     while (NT)
     {
         TABELA *T = (TABELA *)NT->Info;
@@ -957,7 +961,7 @@ int DELETE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
             continue;
         }
 
-        //Sitio para remover 
+        // Sitio para remover
         //? Neste lugar a variavel R é o registo que deve ser removido
         RemoveLG_Index(T->LRegistos, removeIndex, Destruir_Registo);
 
