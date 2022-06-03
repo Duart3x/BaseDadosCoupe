@@ -24,6 +24,7 @@ BDadosCoupe *GetSelectBDCoupByIndex(ListaGenerica *X, int op)
     }
     return NULL;
 }
+
 TABELA *GetSelectedTableByIndex(BDadosCoupe *BD, int op)
 {
     NOG *aux = BD->LTabelas->Inicio;
@@ -39,9 +40,10 @@ TABELA *GetSelectedTableByIndex(BDadosCoupe *BD, int op)
         aux = aux->Prox;
         i++;
     }
+    return NULL;
 }
 
-CAMPO* GetSelectedCampoByIndex(TABELA *T, int op)
+CAMPO *GetSelectedCampoByIndex(TABELA *T, int op)
 {
     NOG *aux = T->LCampos->Inicio;
     CAMPO *C = NULL;
@@ -56,10 +58,10 @@ CAMPO* GetSelectedCampoByIndex(TABELA *T, int op)
         aux = aux->Prox;
         i++;
     }
+    return NULL;
 }
 
-
-char **listabasedados(ListaGenerica *X)
+char **listaBaseDados(ListaGenerica *X)
 {
     BDadosCoupe *BD3 = NULL;
     // percorrer listagenerica
@@ -79,7 +81,8 @@ char **listabasedados(ListaGenerica *X)
     }
     return listaBDs;
 }
-char **listanometabelas(BDadosCoupe *BD)
+
+char **listaNomeTabelas(BDadosCoupe *BD)
 {
     NOG *aux = BD->LTabelas->Inicio;
     TABELA *T = NULL;
@@ -98,7 +101,8 @@ char **listanometabelas(BDadosCoupe *BD)
     }
     return listanomeTabelas;
 }
-char **listanomecampos(TABELA *T)
+
+char **listaNomeCampos(TABELA *T)
 {
     NOG *aux = T->LCampos->Inicio;
     CAMPO *C = NULL;
@@ -117,6 +121,7 @@ char **listanomecampos(TABELA *T)
     }
     return listanomeCampos;
 }
+
 void CriarBaseDados(ListaGenerica *BDS)
 {
     system("cls");
@@ -171,19 +176,20 @@ void EntrarBaseDados(ListaGenerica *BDS)
 
     if (BDS->Inicio == NULL)
     {
-        printf("Não tem uma Base de dados\n");
+        printf("Nao tem uma Base de dados\n");
         system("pause");
-        askToContinue = false;
     }
     else
     {
         system("cls");
 
-        arrayOpcoes = listabasedados(BDS);
+        arrayOpcoes = listaBaseDados(BDS);
         option = drawMenu(arrayOpcoes, BDS->NEL, "Escolha a Base de Dados");
         for (size_t i = 0; i < BDS->NEL; i++)
             free(arrayOpcoes[i]);
         // free(arrayOpcoes);
+        if(option == -1)
+            return;
 
         SelectedBD =  GetSelectBDCoupByIndex(BDS, option);
         printf("Base de Dados: %s\n", SelectedBD->NOME_BDADOS);
@@ -197,177 +203,12 @@ void EntrarBaseDados(ListaGenerica *BDS)
             int op = drawMenu(submenu, 10, title);
             switch (op)
             {
-            case 1:
-                system("cls");
-                printf("\n  \033[4mCriar tabela\033[0m\n\n");
-                printf("  Nome da Tabela: ");
-                scanf("%s", nomeTabela);
-                T = Criar_Tabela(SelectedBD, nomeTabela);
-                printf("  Quantos campos pretende criar? ");
-                scanf("%d", &ncampos);
-                for (size_t i = 0; i < ncampos; i++)
-                {
-                    printf("\n Campo [%d]", i + 1);
-                    printf("\n  Nome: ");
-                    scanf("%s", nomeCampo);
-                    printf("  Tipo (INT, STRING, CHAR, FLOAT): ");
-                    scanf("%s", tipoCampo);
-                    strToUpper(tipoCampo);
-                    if (strcmp(tipoCampo, "INT") != 0 && strcmp(tipoCampo, "STRING") != 0 && strcmp(tipoCampo, "CHAR") != 0 && strcmp(tipoCampo, "FLOAT") != 0)
-                    {
-                        printf("\n  Tipo invalido!\n");
-                        i--;
-                    }
-                    else
-                    {
-                        Add_Campo_Tabela(T, nomeCampo, tipoCampo);
-                    }
-                }
-
-                system("cls");
-                printf("\n  \033[32mTabela criada com sucesso!\033[0m\n");
-
-                printf("\n  \033[4mCampos da Tabela [\033[1m%s\033[0m]\033[0m\n\n", T->NOME_TABELA);
-
-                printf("  \033[4mNome\033[0m\t\t\033[4mTipo\033[0m\n");
-                NC = T->LCampos->Inicio;
-                while (NC)
-                {
-                    CAMPO *C = NC->Info;
-                    printf("  %s\t\t%s\n", C->NOME_CAMPO, C->TIPO);
-                    NC = NC->Prox;
-                }
-
-                break;
-            case 2:
-                system("cls");
-                printf("\n  \033[4mAdicionar dados a uma tabela\033[0m\n\n");
-                printf("  Base de Dados:%s \n\n", SelectedBD->NOME_BDADOS);
-                if (SelectedBD->LTabelas->Inicio == NULL)
-                    printf("\n  \033[31mNao existem tabelas!\033[0m\n");
-                else
-                {
-                    option = 0;
-                    ncampos = 0;
-                    arrayOpcoes = listanometabelas(SelectedBD);
-                    option = drawMenu(arrayOpcoes, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
-                    for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++)
-                        free(arrayOpcoes[i]); // free(arrayOpcoes);
-
-                    T =  GetSelectedTableByIndex(SelectedBD, option);
-                    lncampos = listanomecampos(T);
+                case 1:
                     system("cls");
-                    printf("\n  \033[4mAdicionar dados a uma tabela\033[0m\n\n");
-                    printf("  Tabela:%s \n", T->NOME_TABELA);
-                    ncampos = T->LCampos->NEL;
-                    strcpy(dadosconcat, "");
-                    for (size_t i = 0; i < ncampos; i++)
-                    {
-                        printf("  Campo [%s]: ", lncampos[i]);
-                        scanf("%s", dados);
-                        strcat(dadosconcat, dados);
-                        if (i != ncampos - 1)
-                        {
-                            strcat(dadosconcat, ";");
-                        }
-                    }
-                    if (Add_Valores_Tabela(T, dadosconcat) == 1)
-                        printf("\n  \033[32mDados adicionados com sucesso!\033[0m\n");
-
-                    else
-                        printf("\n  \033[31mErro ao adicionar dados!\033[0m\n");
-
-                    for (size_t i = 0; i < T->LCampos->NEL; i++)
-                        free(lncampos[i]); // free(arrayOpcoes);
-                }
-                break;
-            case 3:
-                system("cls");
-                printf("\n  \033[4mListar todas as tabelas de uma Base de Dados\033[0m\n\n");
-                printf("  Base de Dados: %s\n", SelectedBD->NOME_BDADOS);
-                if (SelectedBD->LTabelas->Inicio == NULL)
-                    printf("\n  \033[31mNao existem tabelas!\033[0m\n");
-                else
-                {
-                    Mostrar_BDados(SelectedBD);
-                }
-                askToContinue = true;
-                break;
-
-            case 4:
-                option = 0;
-                system("cls");
-                printf("\n  \033[4mApagar uma tabela de uma Base de Dados\033[0m\n\n");
-                printf("  Base de Dados: %s\n", SelectedBD->NOME_BDADOS);
-                if (SelectedBD->LTabelas->Inicio == NULL)
-                    printf("\n  \033[31mNao existem tabelas!\033[0m\n");
-                else
-                {
-                    arrayOpcoes = listanometabelas(SelectedBD);
-                    option = drawMenu(arrayOpcoes, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
-                    for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++)
-                        free(arrayOpcoes[i]); // free(arrayOpcoes);
-
-                    T =  GetSelectedTableByIndex(SelectedBD, option);
-                    nomeTabela = T->NOME_TABELA;
-                    system("cls");
-                    printf("\n  \033[4mApagar uma tabela de uma Base de Dados\033[0m\n\n");
-                    printf("  Base de Dados: %s\n", SelectedBD->NOME_BDADOS);
-                    if (DROP_TABLE(SelectedBD, nomeTabela) == 1)
-                        printf("\n  \033[32mTabela removida %s com sucesso!\033[0m\n", nomeTabela);
-                    else
-                        printf("\n  \033[31mErro ao remover %s tabela!\033[0m\n", nomeTabela);
-                }
-                free(nomeTabela);
-                askToContinue = true;
-                break;
-            case 5:
-                arrayOpcoes = listanometabelas(SelectedBD);
-                option = drawMenu(arrayOpcoes, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
-                for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++)
-                    free(arrayOpcoes[i]); // free(arrayOpcoes);
-
-                T =  GetSelectedTableByIndex(SelectedBD, option);
-                nomeTabela = T->NOME_TABELA;
-                system("cls");
-
-                lncampos = listanomecampos(T);
-                option = drawMenu(lncampos, T->LCampos->NEL, "Escolha um Campo");
-                for (size_t i = 0; i < T->LCampos->NEL; i++)
-                    free(lncampos[i]); 
-                
-                campoSelecionado = GetSelectedCampoByIndex(T, option);
-
-                system("cls");
-
-                printf("\n  \033[4mValor a pesquisar\033[0m: ");
-                scanf("%s", valorPesquisar);
-
-                SELECT(SelectedBD,nomeTabela,Compare, campoSelecionado->NOME_CAMPO, valorPesquisar);
-
-
-                break;
-            case 6:
-                break;
-            case 7:
-                break;
-            case 8:
-                system("cls");
-                printf("\n  \033[4mAdicionar campos a uma tabela\033[0m\n\n");
-                printf("  Base de Dados:%s \n\n", SelectedBD->NOME_BDADOS);
-                if (SelectedBD->LTabelas->Inicio == NULL)
-                    printf("\n  \033[31mNao existem tabelas!\033[0m\n");
-                else
-                {
-                    arrayOpcoes = listanometabelas(SelectedBD);
-                    option = drawMenu(arrayOpcoes, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
-                    for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++)
-                        free(arrayOpcoes[i]); // free(arrayOpcoes);
-
-                    T =  GetSelectedTableByIndex(SelectedBD, option);
-                    system("cls");
-                    printf("\n  \033[4mAdicionar campos a uma tabela\033[0m\n\n");
-                    printf("  Tabela:%s \n\n", T->NOME_TABELA);
+                    printf("\n  \033[4mCriar tabela\033[0m\n\n");
+                    printf("  Nome da Tabela: ");
+                    scanf("%s", nomeTabela);
+                    T = Criar_Tabela(SelectedBD, nomeTabela);
                     printf("  Quantos campos pretende criar? ");
                     scanf("%d", &ncampos);
                     for (size_t i = 0; i < ncampos; i++)
@@ -377,63 +218,227 @@ void EntrarBaseDados(ListaGenerica *BDS)
                         scanf("%s", nomeCampo);
                         printf("  Tipo (INT, STRING, CHAR, FLOAT): ");
                         scanf("%s", tipoCampo);
-                        strToUpper(nomeCampo);
                         strToUpper(tipoCampo);
                         if (strcmp(tipoCampo, "INT") != 0 && strcmp(tipoCampo, "STRING") != 0 && strcmp(tipoCampo, "CHAR") != 0 && strcmp(tipoCampo, "FLOAT") != 0)
                         {
-                            printf("\n  \033[31mTipo Invalido!\033[0m\n");
+                            printf("\n  Tipo invalido!\n");
                             i--;
                         }
                         else
                         {
-                            if (Add_Campo_Tabela(T, nomeCampo, tipoCampo) == 1)
-                            {
-                                system("cls");
-                                printf("\n  \033[32mCampo(s) adicionado(s) com sucesso!\033[0m\n");
-                                printf("\n  \033[4mCampos da Tabela [\033[1m%s\033[0m]\033[0m\n\n", T->NOME_TABELA);
-                                printf("  \033[4mNome\033[0m\t\t\033[4mTipo\033[0m\n");
-                                NC = T->LCampos->Inicio;
-                                while (NC)
-                                {
-                                    CAMPO *C = NC->Info;
-                                    printf("  %s\t\t%s\n", C->NOME_CAMPO, C->TIPO);
-                                    NC = NC->Prox;
-                                }
-                            }
-                            else
-                                printf("\n  \033[31mErro ao adicionar campo(s)!\033[0m\n");
+                            Add_Campo_Tabela(T, nomeCampo, tipoCampo);
                         }
                     }
 
-                    free(nomeCampo);
-                }
-                askToContinue = true;
+                    system("cls");
+                    printf("\n  \033[32mTabela criada com sucesso!\033[0m\n");
 
-                break;
-            case 9:
-                system("cls");
-                printf("\n  \033[4mMostar uma tabela\033[0m\n\n");
-                printf("  Base de Dados: %s\n\n", SelectedBD->NOME_BDADOS);
-                if (SelectedBD->LTabelas->Inicio == NULL)
-                    printf("\n  \033[31mNao existem tabelas!\033[0m\n");
-                else
-                {
-                    arrayOpcoes = listanometabelas(SelectedBD);
+                    printf("\n  \033[4mCampos da Tabela [\033[1m%s\033[0m]\033[0m\n\n", T->NOME_TABELA);
+
+                    printf("  \033[4mNome\033[0m\t\t\033[4mTipo\033[0m\n");
+                    NC = T->LCampos->Inicio;
+                    while (NC)
+                    {
+                        CAMPO *C = NC->Info;
+                        printf("  %s\t\t%s\n", C->NOME_CAMPO, C->TIPO);
+                        NC = NC->Prox;
+                    }
+
+                    break;
+                case 2:
+                    system("cls");
+                    printf("\n  \033[4mAdicionar dados a uma tabela\033[0m\n\n");
+                    printf("  Base de Dados:%s \n\n", SelectedBD->NOME_BDADOS);
+                    if (SelectedBD->LTabelas->Inicio == NULL)
+                        printf("\n  \033[31mNao existem tabelas!\033[0m\n");
+                    else
+                    {
+                        option = 0;
+                        ncampos = 0;
+                        arrayOpcoes = listaNomeTabelas(SelectedBD);
+                        option = drawMenu(arrayOpcoes, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
+                        for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++)
+                            free(arrayOpcoes[i]); // free(arrayOpcoes);
+
+                        T =  GetSelectedTableByIndex(SelectedBD, option);
+                        lncampos = listaNomeCampos(T);
+                        system("cls");
+                        printf("\n  \033[4mAdicionar dados a uma tabela\033[0m\n\n");
+                        printf("  Tabela:%s \n", T->NOME_TABELA);
+                        ncampos = T->LCampos->NEL;
+                        strcpy(dadosconcat, "");
+                        for (size_t i = 0; i < ncampos; i++)
+                        {
+                            printf("  Campo [%s]: ", lncampos[i]);
+                            scanf("%s", dados);
+                            strcat(dadosconcat, dados);
+                            if (i != ncampos - 1)
+                            {
+                                strcat(dadosconcat, ";");
+                            }
+                        }
+                        if (Add_Valores_Tabela(T, dadosconcat) == 1)
+                            printf("\n  \033[32mDados adicionados com sucesso!\033[0m\n");
+
+                        else
+                            printf("\n  \033[31mErro ao adicionar dados!\033[0m\n");
+
+                        for (size_t i = 0; i < T->LCampos->NEL; i++)
+                            free(lncampos[i]); // free(arrayOpcoes);
+                    }
+                    break;
+                case 3:
+                    system("cls");
+                    printf("\n  \033[4mListar todas as tabelas de uma Base de Dados\033[0m\n\n");
+                    printf("  Base de Dados: %s\n", SelectedBD->NOME_BDADOS);
+                    if (SelectedBD->LTabelas->Inicio == NULL)
+                        printf("\n  \033[31mNao existem tabelas!\033[0m\n");
+                    else
+                    {
+                        Mostrar_BDados(SelectedBD);
+                    }
+                    askToContinue = true;
+                    break;
+
+                case 4:
+                    option = 0;
+                    system("cls");
+                    printf("\n  \033[4mApagar uma tabela de uma Base de Dados\033[0m\n\n");
+                    printf("  Base de Dados: %s\n", SelectedBD->NOME_BDADOS);
+                    if (SelectedBD->LTabelas->Inicio == NULL)
+                        printf("\n  \033[31mNao existem tabelas!\033[0m\n");
+                    else
+                    {
+                        arrayOpcoes = listaNomeTabelas(SelectedBD);
+                        option = drawMenu(arrayOpcoes, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
+                        for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++)
+                            free(arrayOpcoes[i]); // free(arrayOpcoes);
+
+                        T =  GetSelectedTableByIndex(SelectedBD, option);
+                        
+                        system("cls");
+                        printf("\n  \033[4mApagar uma tabela de uma Base de Dados\033[0m\n\n");
+                        printf("  Base de Dados: %s\n", SelectedBD->NOME_BDADOS);
+                        if (DROP_TABLE(SelectedBD, T->NOME_TABELA) == 1)
+                            printf("\n  \033[32mTabela removida %s com sucesso!\033[0m\n", T->NOME_TABELA);
+                        else
+                            printf("\n  \033[31mErro ao remover %s tabela!\033[0m\n", T->NOME_TABELA);
+                    }
+                    free(nomeTabela);
+                    askToContinue = true;
+                    break;
+                case 5:
+                    arrayOpcoes = listaNomeTabelas(SelectedBD);
                     option = drawMenu(arrayOpcoes, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
                     for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++)
-                        free(arrayOpcoes[i]);
-                    // free(arrayOpcoes);
+                        free(arrayOpcoes[i]); // free(arrayOpcoes);
+
                     T =  GetSelectedTableByIndex(SelectedBD, option);
                     system("cls");
-                    printf("\n  \033[4mMostar uma tabela\033[0m\n\n");
-                    Mostrar_Tabela(T);
-                }
+                    lncampos = listaNomeCampos(T);
+                    option = drawMenu(lncampos, T->LCampos->NEL, "Escolha um Campo");
+                    for (size_t i = 0; i < T->LCampos->NEL; i++)
+                        free(lncampos[i]); 
+                    
+                    campoSelecionado = GetSelectedCampoByIndex(T, option);
 
-                askToContinue = true;
-                break;
-            case 10:
-                exitMenu = true;
-                break;
+                    system("cls");
+
+                    printf("\n  \033[4mValor a pesquisar\033[0m: ");
+                    scanf("%s", valorPesquisar);
+
+                    SELECT(SelectedBD,T->NOME_TABELA,Compare, campoSelecionado->NOME_CAMPO, valorPesquisar);
+
+                    break;
+                case 6:
+                    break;
+                case 7:
+                    break;
+                case 8:
+                    system("cls");
+                    printf("\n  \033[4mAdicionar campos a uma tabela\033[0m\n\n");
+                    printf("  Base de Dados:%s \n\n", SelectedBD->NOME_BDADOS);
+                    if (SelectedBD->LTabelas->Inicio == NULL)
+                        printf("\n  \033[31mNao existem tabelas!\033[0m\n");
+                    else
+                    {
+                        arrayOpcoes = listaNomeTabelas(SelectedBD);
+                        option = drawMenu(arrayOpcoes, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
+                        for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++)
+                            free(arrayOpcoes[i]); // free(arrayOpcoes);
+
+                        T =  GetSelectedTableByIndex(SelectedBD, option);
+                        system("cls");
+                        printf("\n  \033[4mAdicionar campos a uma tabela\033[0m\n\n");
+                        printf("  Tabela:%s \n\n", T->NOME_TABELA);
+                        printf("  Quantos campos pretende criar? ");
+                        scanf("%d", &ncampos);
+                        for (size_t i = 0; i < ncampos; i++)
+                        {
+                            printf("\n Campo [%d]", i + 1);
+                            printf("\n  Nome: ");
+                            scanf("%s", nomeCampo);
+                            printf("  Tipo (INT, STRING, CHAR, FLOAT): ");
+                            scanf("%s", tipoCampo);
+                            strToUpper(nomeCampo);
+                            strToUpper(tipoCampo);
+                            if (strcmp(tipoCampo, "INT") != 0 && strcmp(tipoCampo, "STRING") != 0 && strcmp(tipoCampo, "CHAR") != 0 && strcmp(tipoCampo, "FLOAT") != 0)
+                            {
+                                printf("\n  \033[31mTipo Invalido!\033[0m\n");
+                                i--;
+                            }
+                            else
+                            {
+                                if (Add_Campo_Tabela(T, nomeCampo, tipoCampo) == 1)
+                                {
+                                    system("cls");
+                                    printf("\n  \033[32mCampo(s) adicionado(s) com sucesso!\033[0m\n");
+                                    printf("\n  \033[4mCampos da Tabela [\033[1m%s\033[0m]\033[0m\n\n", T->NOME_TABELA);
+                                    printf("  \033[4mNome\033[0m\t\t\033[4mTipo\033[0m\n");
+                                    NC = T->LCampos->Inicio;
+                                    while (NC)
+                                    {
+                                        CAMPO *C = NC->Info;
+                                        printf("  %s\t\t%s\n", C->NOME_CAMPO, C->TIPO);
+                                        NC = NC->Prox;
+                                    }
+                                }
+                                else
+                                    printf("\n  \033[31mErro ao adicionar campo(s)!\033[0m\n");
+                            }
+                        }
+
+                        free(nomeCampo);
+                    }
+                    askToContinue = true;
+
+                    break;
+                case 9:
+                    system("cls");
+                    printf("\n  \033[4mMostar uma tabela\033[0m\n\n");
+                    printf("  Base de Dados: %s\n\n", SelectedBD->NOME_BDADOS);
+                    if (SelectedBD->LTabelas->Inicio == NULL)
+                        printf("\n  \033[31mNao existem tabelas!\033[0m\n");
+                    else
+                    {
+                        arrayOpcoes = listaNomeTabelas(SelectedBD);
+                        option = drawMenu(arrayOpcoes, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
+                        for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++)
+                            free(arrayOpcoes[i]);
+                        // free(arrayOpcoes);
+                        T =  GetSelectedTableByIndex(SelectedBD, option);
+                        system("cls");
+                        printf("\n  \033[4mMostar uma tabela\033[0m\n\n");
+                        Mostrar_Tabela(T);
+                    }
+
+                    askToContinue = true;
+                    break;
+                case 10:
+                case -1:
+                    exitMenu = true;
+                    askToContinue = false;
+                    break;
             }
 
             if (!exitMenu && askToContinue)
@@ -453,6 +458,7 @@ void EntrarBaseDados(ListaGenerica *BDS)
     free(campoSelecionado);
     free(valorPesquisar);
 }
+
 void ImportarBaseDados(ListaGenerica *BDS)
 {
     system("cls");
@@ -467,65 +473,66 @@ void ImportarBaseDados(ListaGenerica *BDS)
 
     switch (op)
     {
-    case 1:
-        system("cls");
-        printf("\n  \033[4mImportar Base de Dados\033[0m\n\n");
-        printf("  Nome do ficheiro (****.csv): ");
-        scanf("%s", fich_name);
-        bdName = malloc(sizeof(char) * strlen(fich_name) + 1);
-        strtok(fich_name, ".");
-        strcpy(bdName, fich_name);
+        case 1:
+            system("cls");
+            printf("\n  \033[4mImportar Base de Dados\033[0m\n\n");
+            printf("  Nome do ficheiro (****.csv): ");
+            scanf("%s", fich_name);
+            bdName = malloc(sizeof(char) * strlen(fich_name) + 1);
+            strtok(fich_name, ".");
+            strcpy(bdName, fich_name);
 
-        ImportBD = Criar_BDados(bdName, "1.0");
-        strcat(fich_name, ".csv");
-        if (Importar_BDados_Excel(ImportBD, fich_name) == SUCESSO)
-        {
-            AddFimLG(BDS, ImportBD);
-            printf("\n  \033[32mBase de Dados importada com sucesso!\033[0m\n");
-            system("pause");
-        }
-        else
-        {
+            ImportBD = Criar_BDados(bdName, "1.0");
+            strcat(fich_name, ".csv");
+            if (Importar_BDados_Excel(ImportBD, fich_name) == SUCESSO)
+            {
+                AddFimLG(BDS, ImportBD);
+                printf("\n  \033[32mBase de Dados importada com sucesso!\033[0m\n");
+                system("pause");
+            }
+            else
+            {
 
-            printf("\n  \033[31mErro ao importar base de dados!\033[0m\n");
-            free(ImportBD);
-            system("pause");
-        }
-    break;
-
-    case 2:
-        system("cls");
-        printf("\n  \033[4mImportar Base de Dados\033[0m\n\n");
-        printf("  Nome do ficheiro (****.dat): ");
-        scanf("%s", fich_name);
-        bdName = malloc(sizeof(char) * strlen(fich_name) + 1);
-        strtok(fich_name, ".");
-        strcpy(bdName, fich_name);
-
-        ImportBD = Criar_BDados(bdName, "1.0");
-        strcat(fich_name, ".dat");
-
-        if (Importar_BDados_Ficheiro_Binario(ImportBD, fich_name) == SUCESSO)
-        {
-            AddFimLG(BDS, ImportBD);
-
-            // printf color green
-            printf("\n  \033[32mBase de Dados importada com sucesso!\033[0m\n");
-            system("pause");
-        }
-        else
-        {
-            printf("\n  \033[31mErro ao importar base de dados!\033[0m\n");
-            free(ImportBD);
-            system("pause");
-        }
-
+                printf("\n  \033[31mErro ao importar base de dados!\033[0m\n");
+                free(ImportBD);
+                system("pause");
+            }
         break;
-    case 3:
-        break;
+
+        case 2:
+            system("cls");
+            printf("\n  \033[4mImportar Base de Dados\033[0m\n\n");
+            printf("  Nome do ficheiro (****.dat): ");
+            scanf("%s", fich_name);
+            bdName = malloc(sizeof(char) * strlen(fich_name) + 1);
+            strtok(fich_name, ".");
+            strcpy(bdName, fich_name);
+
+            ImportBD = Criar_BDados(bdName, "1.0");
+            strcat(fich_name, ".dat");
+
+            if (Importar_BDados_Ficheiro_Binario(ImportBD, fich_name) == SUCESSO)
+            {
+                AddFimLG(BDS, ImportBD);
+
+                // printf color green
+                printf("\n  \033[32mBase de Dados importada com sucesso!\033[0m\n");
+                system("pause");
+            }
+            else
+            {
+                printf("\n  \033[31mErro ao importar base de dados!\033[0m\n");
+                free(ImportBD);
+                system("pause");
+            }
+
+            break;
+        case 3:
+            break;
     }
     free(fich_name);
 }
+
 void ExportarBaseDados(ListaGenerica *BDS)
 {
     system("cls");
@@ -546,10 +553,12 @@ void ExportarBaseDados(ListaGenerica *BDS)
     }
     else
     {
-        arrayOpcoes = listabasedados(BDS);
+        arrayOpcoes = listaBaseDados(BDS);
         option = drawMenu(arrayOpcoes, BDS->NEL, "Escolha a Base de Dados");
         for (size_t i = 0; i < BDS->NEL; i++)
             free(arrayOpcoes[i]);
+        if(option == -1)
+            return;
         SelectedBD =  GetSelectBDCoupByIndex(BDS, option);
         op = drawMenu(expoptions, 3, "Menu Exportar");
         switch (op)
@@ -583,8 +592,8 @@ void ExportarBaseDados(ListaGenerica *BDS)
             }
             else
             {
-                fich_name = SelectedBD->NOME_BDADOS;
-                strcat(fich_name, ".bin");
+                strcpy(fich_name, SelectedBD->NOME_BDADOS);
+                strcat(fich_name, ".dat");
 
                 if (Exportar_BDados_Ficheiro_Binario(SelectedBD, fich_name) == SUCESSO)
                 {
@@ -598,12 +607,11 @@ void ExportarBaseDados(ListaGenerica *BDS)
                 }
             }
             break;
-        case 3:
-            break;
         }
     }
     free(fich_name);
 }
+
 int main()
 {
 
