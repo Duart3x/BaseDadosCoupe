@@ -279,7 +279,7 @@ void EntrarBaseDados(ListaGenerica *BDS)
                     arrayOpcoes = listanometabelas(SelectedBD);
                     option = drawMenu(arrayOpcoes, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
                     for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++) //free(arrayOpcoes[i]); 
-                    free(arrayOpcoes);
+                //    free(arrayOpcoes);
 
                     T = SelectedTable(SelectedBD, option);
                     Mostrar_Tabela(T);
@@ -369,7 +369,9 @@ int main()
     char *nomeBD = (char *)malloc(sizeof(char) * 50);
     char *versaoBD = (char *)malloc(sizeof(char) * 50);
     char *fich_name = (char *)malloc(sizeof(char) * 50);
-
+    char *bdName;
+    BDadosCoupe *ImportBD;
+    
     do
     {
         askToContinue = true;
@@ -401,51 +403,50 @@ int main()
 
             switch (op)
             {
-            case 1:
-            {
-                printf("Nome do ficheiro (****.csv): ");
-                scanf("%s", fich_name);
-                char *bdName = malloc(sizeof(char) * strlen(fich_name) + 1);
-                strcpy(bdName, fich_name);
+                case 1:
+                    printf("Nome do ficheiro (****.csv): ");
+                    scanf("%s", fich_name);
+                    bdName = malloc(sizeof(char) * strlen(fich_name) + 1);
+                    strtok(fich_name, ".");
+                    strcpy(bdName, fich_name);
 
-                BDadosCoupe *ImportBD = Criar_BDados(bdName, "1.0");
-                strcat(fich_name, ".csv");
-                if (Importar_BDados_Excel(ImportBD, fich_name) == SUCESSO)
-                    AddFimLG(BDS, ImportBD);
-                else
-                {
-                    printf("Erro ao importar o ficheiro\n");
-                    free(ImportBD);
-                    system("pause");
+                    ImportBD = Criar_BDados(bdName, "1.0");
+                    strcat(fich_name, ".csv");
+                    if (Importar_BDados_Excel(ImportBD, fich_name) == SUCESSO)
+                        AddFimLG(BDS, ImportBD);
+                    else
+                    {
+                        printf("Erro ao importar o ficheiro\n");
+                        free(ImportBD);
+                    }
+                    break;
+
+                case 2:
+                    printf("Nome do ficheiro (****.dat): ");
+                    scanf("%s", fich_name);
+                    bdName = malloc(sizeof(char) * strlen(fich_name) + 1);
+                    strtok(fich_name, ".");
+                    strcpy(bdName, fich_name);
+
+                    ImportBD = Criar_BDados(bdName, "1.0");
+                    strcat(fich_name, ".dat");
+                    if (Importar_BDados_Ficheiro_Binario(ImportBD, fich_name) == SUCESSO)
+                    {
+                        AddFimLG(BDS, ImportBD);
+                        printf("Tabela importada com sucesso\n");
+                        system("pause");
+                    }
+                    else
+                    {
+                        printf("Erro ao importar o ficheiro\n");
+                        free(ImportBD);
+                        system("pause");
+                    }
+
+                    break;
+                case 3:
+                    break;
                 }
-            }
-
-            case 2:
-                printf("Nome do ficheiro (****.dat): ");
-                scanf("%s", fich_name);
-                char *bdName = malloc(sizeof(char) * strlen(fich_name) + 1);
-                strtok(fich_name, ".");
-                strcpy(bdName, fich_name);
-
-                BDadosCoupe *ImportBD = Criar_BDados(bdName, "1.0");
-                strcat(fich_name, ".dat");
-                if (Importar_BDados_Ficheiro_Binario(ImportBD, fich_name) == SUCESSO)
-                {
-                    AddFimLG(BDS, ImportBD);
-                    printf("Tabela importada com sucesso\n");
-                    system("pause");
-                }
-                else
-                {
-                    printf("Erro ao importar o ficheiro\n");
-                    free(ImportBD);
-                    system("pause");
-                }
-
-                break;
-            case 3:
-                break;
-            }
             free(fich_name);
             askToContinue = false;
             break;
