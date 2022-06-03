@@ -530,7 +530,6 @@ void EntrarBaseDados(ListaGenerica *BDS)
     free(dados);
     free(nomeTabela);
     free(tipoCampo);
-    free(campoSelecionado);
     free(valorPesquisar);
 }
 
