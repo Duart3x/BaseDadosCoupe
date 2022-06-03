@@ -142,14 +142,17 @@ void Mostrar_Tabela_NOME(BDadosCoupe *BD, char *tabela)
 
 void Mostrar_Campo(void *C)
 {
-    CAMPO *c = (CAMPO *)C;
-    printf("%s ", c->NOME_CAMPO);
+    CAMPO *c = (CAMPO *)C;   
+    
+    // printf blue text
+
+    printf("\t\033[4m\033[1;34m%s\033[0m\t", c->NOME_CAMPO);
 }
 
 void Mostra_Valor(void *V)
 {
     char *valor = (char *)V;
-    printf("%s ", valor);
+    printf("\t%s\t", valor);
 }
 
 void Mostrar_Registo(void *R)
@@ -167,7 +170,7 @@ void Mostrar_Tabela(TABELA *T)
     sprintf(startTime,"%d-%02d-%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
     clock_t init = clock();
 
-    printf("Nome da Tabela: %s\n", T->NOME_TABELA);
+    printf("  Tabela: \033[4m%s\033[0m\n\n", T->NOME_TABELA);
     MostrarLG(T->LCampos, Mostrar_Campo);
     printf("\n");
     MostrarLG(T->LRegistos, Mostrar_Registo);
@@ -183,7 +186,7 @@ void Mostrar_Tabela(TABELA *T)
     fp = fopen("runTimes.csv", "a");
     fprintf(fp, "%s;%s;%s;%f\n", __func__, startTime, endTime, time);
     fclose(fp);
-    printf("Tempo de Execucao: %f\n", time);
+    printf("  Tempo de Execucao: %f\n", time);
     free(startTime);
     free(endTime);
     
@@ -196,7 +199,7 @@ void Mostrar_BDados(BDadosCoupe *BD)
     while (T)
     {
         Mostrar_Tabela(T->Info);
-        printf("\n-----------------------------------------------------\n");
+        printf("\n  -----------------------------------------------------\n");
         T = T->Prox;
     }
 }
@@ -715,7 +718,7 @@ int DELETE_TABLE_DATA(TABELA *T)
     fp = fopen("runTimes.csv", "a");
     fprintf(fp, "%s;%s;%s;%f\n", __func__, startTime, endTime, time);
     fclose(fp);
-    printf("Tempo de Execucao: %f\n", time);
+    printf("  Tempo de Execucao: %f\n", time);
     free(startTime);
     free(endTime);
 
@@ -763,7 +766,7 @@ int DROP_TABLE(BDadosCoupe *BD, char *nome_tabela)
     fp = fopen("runTimes.csv", "a");
     fprintf(fp, "%s;%s;%s;%f\n", __func__, startTime, endTime, time);
     fclose(fp);
-    printf("Tempo de Execucao: %f\n", time);
+    printf("  Tempo de Execucao: %f\n", time);
     free(startTime);
     free(endTime);
 
@@ -795,9 +798,6 @@ int SELECT(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
     NOG *NR = T->LRegistos->Inicio;
     NOG *NC = T->LCampos->Inicio;
 
-    MostrarLG(T->LCampos, Mostra_Valor);
-    printf("\n");
-
     int campoIndex = -1;
     int aux = 0;
 
@@ -819,7 +819,10 @@ int SELECT(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
     int count = 0;
     int found = 0;
 
-    printf("  QUERY: SELECT * FROM %s WHERE %s = %s\n  Resultado(s):\n\n", _tabela, nome_campo, valor_comparacao);
+    printf("\n\n  \033[4mQUERY\033[0m: SELECT * FROM %s WHERE %s = %s\n\n", _tabela, nome_campo, valor_comparacao);
+
+    MostrarLG(T->LCampos, Mostrar_Campo);
+    printf("\n");
 
     while (NR)
     {
@@ -873,7 +876,7 @@ int SELECT(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
     fp = fopen("runTimes.csv", "a");
     fprintf(fp, "%s;%s;%s;%f\n", __func__, startTime, endTime, time);
     fclose(fp);
-    printf("Tempo de Execucao: %f\n", time);
+    printf("\n\n  Tempo de Execucao: %f\n", time);
     free(startTime);
     free(endTime);
 
@@ -977,7 +980,7 @@ int DELETE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
     fp = fopen("runTimes.csv", "a");
     fprintf(fp, "%s;%s;%s;%f\n", __func__, startTime, endTime, time);
     fclose(fp);
-    printf("Tempo de Execucao: %f\n", time);
+    printf("  Tempo de Execucao: %f\n", time);
     free(startTime);
     free(endTime);
 
@@ -1005,7 +1008,7 @@ int UPDATE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
     fp = fopen("runTimes.csv", "a");
     fprintf(fp, "%s;%s;%s;%f\n", __func__, startTime, endTime, time);
     fclose(fp);
-    printf("Tempo de Execucao: %f\n", time);
+    printf("  Tempo de Execucao: %f\n", time);
     free(startTime);
     free(endTime);
 
