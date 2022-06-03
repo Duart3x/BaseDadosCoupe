@@ -427,10 +427,7 @@ int Exportar_BDados_Excel(BDadosCoupe *BD)
 
     char *ficheiroTabelas = malloc(sizeof(char) * 250);
 
-    if (!NT)
-    {
-        return INSUCESSO;
-    }
+    
     while (NT)
     {
         TABELA *T = (TABELA *)NT->Info;
@@ -537,7 +534,7 @@ int Exportar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *fich_dat)
         return INSUCESSO;
 
     NOG *NT = BD->LTabelas->Inicio;
-
+    
     fwrite(&BD->LTabelas->NEL, sizeof(int), 1, f);
     while (NT)
     {
