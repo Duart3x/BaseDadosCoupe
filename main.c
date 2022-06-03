@@ -555,39 +555,54 @@ void ExportarBaseDados(ListaGenerica *BDS)
         switch (op)
         {
         case 1:
-            if(Exportar_BDados_Excel(SelectedBD)==SUCESSO)
+            if (SelectedBD->LTabelas->Inicio == NULL)
             {
-                printf("\n  \033[32mBase de Dados exportada com sucesso!\033[0m\n");
+                printf("\n  \033[31mNao existem tabelas na Base Dados %s para exportar!\033[0m\n", SelectedBD->NOME_BDADOS);
                 system("pause");
             }
             else
             {
-                printf("\n  \033[31mErro ao exportar base de dados!\033[0m\n");
-                system("pause");
+                if (Exportar_BDados_Excel(SelectedBD) == SUCESSO)
+                {
+                    printf("\n  \033[32mBase de Dados %s exportada com sucesso!\033[0m\n", SelectedBD->NOME_BDADOS);
+                    system("pause");
+                }
+                else
+                {
+                    printf("\n  \033[31mErro ao exportar base de dados %s!\033[0m\n", SelectedBD->NOME_BDADOS);
+                    system("pause");
+                }
             }
-            
+
             break;
         case 2:
-            fich_name = SelectedBD->NOME_BDADOS;
-            strcat(fich_name, ".bin");
-            if(Exportar_BDados_Ficheiro_Binario(SelectedBD, fich_name)==SUCESSO)
+            if (SelectedBD->LTabelas->Inicio == NULL)
             {
-                printf("\n  \033[32mBase de Dados exportada com sucesso!\033[0m\n");
+                printf("\n  \033[31mNao existem tabelas na Base Dados %s para exportar!\033[0m\n", SelectedBD->NOME_BDADOS);
                 system("pause");
             }
             else
             {
-                printf("\n  \033[31mErro ao exportar base de dados!\033[0m\n");
-                system("pause");
+                fich_name = SelectedBD->NOME_BDADOS;
+                strcat(fich_name, ".bin");
+
+                if (Exportar_BDados_Ficheiro_Binario(SelectedBD, fich_name) == SUCESSO)
+                {
+                    printf("\n  \033[32mBase de Dados %s exportada com sucesso!\033[0m\n", SelectedBD->NOME_BDADOS);
+                    system("pause");
+                }
+                else
+                {
+                    printf("\n  \033[31mErro ao exportar base de dados %s!\033[0m\n", SelectedBD->NOME_BDADOS);
+                    system("pause");
+                }
             }
             break;
         case 3:
             break;
         }
-        
     }
     free(fich_name);
-
 }
 int main()
 {
