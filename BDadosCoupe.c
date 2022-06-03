@@ -990,6 +990,8 @@ int DELETE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
 // P)	Atualizar todos os registos da tabela onde o Campo � dado, que obede�am a uma dada condi��o, a fun��o deve retornar o n�mero de registos que foram atualizados.
 int UPDATE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), char *campo_comp, char *valor_campo_comp, char *nome_campo_update, char *valor_campo_update)
 {
+    if (!BD || !_tabela || !f_condicao || !campo_comp || !valor_campo_comp || !nome_campo_update, !valor_campo_update)
+        return INSUCESSO;
 
     time_t t = time(NULL);
     struct tm tm = *localtime(&t);
@@ -997,6 +999,94 @@ int UPDATE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
     sprintf(startTime,"%d-%02d-%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
     clock_t init = clock();
 
+    TABELA *T = Pesquisar_Tabela(BD, _tabela);
+
+    if (!T)
+        return INSUCESSO;
+
+    NOG *NR = T->LRegistos->Inicio;
+    NOG *NC = T->LCampos->Inicio;
+
+    int campoCompIndex = -1;
+    int campoUpdateIndex = -1;
+    int count = 0;
+    int aux = 0;
+
+    while (NC)
+    {
+        CAMPO *C = (CAMPO *)NC->Info;
+
+        if (strcmp(C->NOME_CAMPO, campo_comp) == 0)
+            campoCompIndex = aux;
+
+        if (strcmp(C->NOME_CAMPO, nome_campo_update) == 0)
+            campoUpdateIndex = aux;
+
+        aux++;
+        NC = NC->Prox;
+    }
+
+    if (campoCompIndex == -1)
+        return INSUCESSO;
+
+    aux = 0;
+    int found = 0;
+
+    while (NR)
+    {
+        REGISTO *R = (REGISTO *)NR->Info;
+        NOG *NV = R->LValores->Inicio;
+
+        aux = 0;
+
+        while (NV)
+        {
+            if (aux == campoCompIndex)
+            {
+                char *valor = (char *)NV->Info;
+                if (f_condicao(valor, valor_campo_comp) == 0)
+                    found = 1;
+            }
+
+            aux++;
+
+            if (found)
+                break;
+
+            NV = NV->Prox;
+        }
+
+        if (!found)
+        {
+            NR = NR->Prox;
+            continue;
+        }
+
+        NV = R->LValores->Inicio;
+        aux = 0;
+        found = 0;
+
+        while (NV)
+        {
+            if (aux == campoUpdateIndex)
+            {
+                strcpy(NV->Info, valor_campo_update);
+
+                count++;
+                found = 1;
+            }
+
+            aux++;
+
+            if (found)
+                break;
+
+            NV = NV->Prox;
+        }
+
+        found = 0;
+        NR = NR->Prox;
+    }
 
     clock_t end = clock();
     t = time(NULL);
@@ -1012,5 +1102,5 @@ int UPDATE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
     free(startTime);
     free(endTime);
 
-    return SUCESSO;
+    return count;
 }
