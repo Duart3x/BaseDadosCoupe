@@ -5,7 +5,7 @@
 #include <conio.h>
 #include "BDadosCoupe.h"
 
-BDadosCoupe *SelectBDCoup(ListaGenerica *X, int op)
+BDadosCoupe *GetSelectBDCoupByIndex(ListaGenerica *X, int op)
 {
 
     NOG *aux = X->Inicio;
@@ -24,7 +24,7 @@ BDadosCoupe *SelectBDCoup(ListaGenerica *X, int op)
     }
     return NULL;
 }
-TABELA *SelectedTable(BDadosCoupe *BD, int op)
+TABELA *GetSelectedTableByIndex(BDadosCoupe *BD, int op)
 {
     NOG *aux = BD->LTabelas->Inicio;
     TABELA *T = NULL;
@@ -40,6 +40,25 @@ TABELA *SelectedTable(BDadosCoupe *BD, int op)
         i++;
     }
 }
+
+CAMPO* GetSelectedCampoByIndex(TABELA *T, int op)
+{
+    NOG *aux = T->LCampos->Inicio;
+    CAMPO *C = NULL;
+    int i = 0;
+    while (aux != NULL)
+    {
+        C = aux->Info;
+        if (i == op - 1)
+        {
+            return C;
+        }
+        aux = aux->Prox;
+        i++;
+    }
+}
+
+
 char **listabasedados(ListaGenerica *X)
 {
     BDadosCoupe *BD3 = NULL;
@@ -147,6 +166,9 @@ void EntrarBaseDados(ListaGenerica *BDS)
     bool exitMenu = false;
     NOG *NC = NULL;
 
+    CAMPO* campoSelecionado = NULL;
+    char* valorPesquisar = (char*)malloc(sizeof(char) * 50);
+
     if (BDS->Inicio == NULL)
     {
         printf("Não tem uma Base de dados\n");
@@ -163,7 +185,7 @@ void EntrarBaseDados(ListaGenerica *BDS)
             free(arrayOpcoes[i]);
         // free(arrayOpcoes);
 
-        SelectedBD = SelectBDCoup(BDS, option);
+        SelectedBD =  GetSelectBDCoupByIndex(BDS, option);
         printf("Base de Dados: %s\n", SelectedBD->NOME_BDADOS);
         char *title = malloc(sizeof(char) * (20 + strlen(SelectedBD->NOME_BDADOS)));
 
@@ -232,7 +254,7 @@ void EntrarBaseDados(ListaGenerica *BDS)
                     for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++)
                         free(arrayOpcoes[i]); // free(arrayOpcoes);
 
-                    T = SelectedTable(SelectedBD, option);
+                    T =  GetSelectedTableByIndex(SelectedBD, option);
                     lncampos = listanomecampos(T);
                     system("cls");
                     printf("\n  \033[4mAdicionar dados a uma tabela\033[0m\n\n");
@@ -286,7 +308,7 @@ void EntrarBaseDados(ListaGenerica *BDS)
                     for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++)
                         free(arrayOpcoes[i]); // free(arrayOpcoes);
 
-                    T = SelectedTable(SelectedBD, option);
+                    T =  GetSelectedTableByIndex(SelectedBD, option);
                     nomeTabela = T->NOME_TABELA;
                     system("cls");
                     printf("\n  \033[4mApagar uma tabela de uma Base de Dados\033[0m\n\n");
@@ -300,6 +322,30 @@ void EntrarBaseDados(ListaGenerica *BDS)
                 askToContinue = true;
                 break;
             case 5:
+                arrayOpcoes = listanometabelas(SelectedBD);
+                option = drawMenu(arrayOpcoes, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
+                for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++)
+                    free(arrayOpcoes[i]); // free(arrayOpcoes);
+
+                T =  GetSelectedTableByIndex(SelectedBD, option);
+                nomeTabela = T->NOME_TABELA;
+                system("cls");
+
+                lncampos = listanomecampos(T);
+                option = drawMenu(lncampos, T->LCampos->NEL, "Escolha um Campo");
+                for (size_t i = 0; i < T->LCampos->NEL; i++)
+                    free(lncampos[i]); 
+                
+                campoSelecionado = GetSelectedCampoByIndex(T, option);
+
+                system("cls");
+
+                printf("\n  \033[4mValor a pesquisar\033[0m: ");
+                scanf("%s", valorPesquisar);
+
+                SELECT(SelectedBD,nomeTabela,Compare, campoSelecionado->NOME_CAMPO, valorPesquisar);
+
+
                 break;
             case 6:
                 break;
@@ -318,7 +364,7 @@ void EntrarBaseDados(ListaGenerica *BDS)
                     for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++)
                         free(arrayOpcoes[i]); // free(arrayOpcoes);
 
-                    T = SelectedTable(SelectedBD, option);
+                    T =  GetSelectedTableByIndex(SelectedBD, option);
                     system("cls");
                     printf("\n  \033[4mAdicionar campos a uma tabela\033[0m\n\n");
                     printf("  Tabela:%s \n\n", T->NOME_TABELA);
@@ -377,10 +423,9 @@ void EntrarBaseDados(ListaGenerica *BDS)
                     for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++)
                         free(arrayOpcoes[i]);
                     // free(arrayOpcoes);
-                    T = SelectedTable(SelectedBD, option);
+                    T =  GetSelectedTableByIndex(SelectedBD, option);
                     system("cls");
                     printf("\n  \033[4mMostar uma tabela\033[0m\n\n");
-                    printf("  Tabela: %s\n\n", T->NOME_TABELA);
                     Mostrar_Tabela(T);
                 }
 
@@ -405,6 +450,8 @@ void EntrarBaseDados(ListaGenerica *BDS)
     free(dados);
     free(nomeTabela);
     free(tipoCampo);
+    free(campoSelecionado);
+    free(valorPesquisar);
 }
 void ImportarBaseDados(ListaGenerica *BDS)
 {
@@ -503,7 +550,7 @@ void ExportarBaseDados(ListaGenerica *BDS)
         option = drawMenu(arrayOpcoes, BDS->NEL, "Escolha a Base de Dados");
         for (size_t i = 0; i < BDS->NEL; i++)
             free(arrayOpcoes[i]);
-        SelectedBD = SelectBDCoup(BDS, option);
+        SelectedBD =  GetSelectBDCoupByIndex(BDS, option);
         op = drawMenu(expoptions, 3, "Menu Exportar");
         switch (op)
         {
