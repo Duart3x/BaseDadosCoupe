@@ -17,8 +17,6 @@ typedef struct
 {
     NOG *Inicio;
     NOG *Fim;
-    NOG *UltimaConsulta;
-    int IndexUltimaConsulta;
     int NEL;
 }ListaGenerica;
 

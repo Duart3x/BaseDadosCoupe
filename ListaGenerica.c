@@ -6,8 +6,6 @@ ListaGenerica *CriarLG()
     ListaGenerica *L = (ListaGenerica *)malloc(sizeof(ListaGenerica));
     L->Inicio = NULL;
     L->Fim = NULL;
-    L->UltimaConsulta = NULL;
-    L->IndexUltimaConsulta = -1;
     L->NEL = 0;
     return L;
 }
