@@ -976,13 +976,12 @@ int DELETE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
             continue;
         }
 
-        // Sitio para remover
-        //? Neste lugar a variavel R é o registo que deve ser removido
+        NR = NR->Prox;
+        NV = R->LValores->Inicio;
+
         RemoveLG_Index(T->LRegistos, removeIndex, Destruir_Registo);
 
         found = 0;
-        removeIndex++;
-        NR = NR->Prox;
     }
 
     clock_t end = clock();

@@ -180,7 +180,9 @@ void EntrarBaseDados(ListaGenerica *BDS)
     NOG *NC = NULL;
 
     CAMPO *campoSelecionado = NULL;
+    CAMPO *campoSelecionado2 = NULL;
     char *valorPesquisar = (char *)malloc(sizeof(char) * 50);
+    char *valorPesquisar2 = (char *)malloc(sizeof(char) * 50);
 
     if (BDS->Inicio == NULL)
     {
@@ -473,7 +475,37 @@ void EntrarBaseDados(ListaGenerica *BDS)
                     }
                     else
                     {
+                        arrayOpcoes = listaNomeTabelas(SelectedBD);
+                        option = drawMenu(arrayOpcoes, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
+                        for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++)
+                            free(arrayOpcoes[i]); // free(arrayOpcoes);
 
+                        T = GetSelectedTableByIndex(SelectedBD, option);
+                        
+                        system("cls");
+
+                        lncampos = listaNomeCampos(T);
+                        option = drawMenu(lncampos, T->LCampos->NEL, "Escolha um Campo para comparar");
+
+                        campoSelecionado = GetSelectedCampoByIndex(T, option);
+
+                        system("cls");
+
+                        printf("\n  \033[4mValor a comparar\033[0m: ");
+                        scanf("%s", valorPesquisar);
+
+                        option = drawMenu(lncampos, T->LCampos->NEL, "Escolha um Campo para alterar");
+                        for (size_t i = 0; i < T->LCampos->NEL; i++)
+                            free(lncampos[i]);
+
+                        campoSelecionado2 = GetSelectedCampoByIndex(T, option);
+
+                        system("cls");
+
+                        printf("\n  \033[4mAlteracao\033[0m: ");
+                        scanf("%s", valorPesquisar2);
+
+                        UPDATE(SelectedBD, T->NOME_TABELA, Compare, campoSelecionado->NOME_CAMPO, valorPesquisar, campoSelecionado2->NOME_CAMPO, valorPesquisar2);
                     }
                     break;
 
@@ -505,6 +537,10 @@ void EntrarBaseDados(ListaGenerica *BDS)
 
                     system("cls");
 
+                    printf("\n  \033[4mValor a pesquisar\033[0m: ");
+                    scanf("%s", valorPesquisar);
+
+                    DELETE(SelectedBD, T->NOME_TABELA, Compare, campoSelecionado->NOME_CAMPO, valorPesquisar);
                 }
                 break;
             
@@ -530,7 +566,6 @@ void EntrarBaseDados(ListaGenerica *BDS)
     free(dados);
     free(nomeTabela);
     free(tipoCampo);
-    free(campoSelecionado);
     free(valorPesquisar);
 }
 
