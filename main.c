@@ -421,12 +421,12 @@ void ImportarBaseDados(ListaGenerica *BDS)
     switch (op)
     {
     case 1:
-    {
         system("cls");
         printf("\n  \033[4mImportar Base de Dados\033[0m\n\n");
         printf("  Nome do ficheiro (****.csv): ");
         scanf("%s", fich_name);
         bdName = malloc(sizeof(char) * strlen(fich_name) + 1);
+        strtok(fich_name, ".");
         strcpy(bdName, fich_name);
 
         ImportBD = Criar_BDados(bdName, "1.0");
@@ -444,7 +444,7 @@ void ImportarBaseDados(ListaGenerica *BDS)
             free(ImportBD);
             system("pause");
         }
-    }
+    break;
 
     case 2:
         system("cls");
@@ -614,7 +614,6 @@ int main()
 
     char **p;
     char **lncampos;
-
     do
     {
         askToContinue = true;

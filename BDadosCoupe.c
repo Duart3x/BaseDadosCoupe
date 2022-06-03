@@ -161,21 +161,37 @@ void Mostrar_Registo(void *R)
 
 void Mostrar_Tabela(TABELA *T)
 {
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    char* startTime = malloc(sizeof(char) * 20);
+    sprintf(startTime,"%d-%02d-%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
     clock_t init = clock();
+
     printf("Nome da Tabela: %s\n", T->NOME_TABELA);
     MostrarLG(T->LCampos, Mostrar_Campo);
     printf("\n");
     MostrarLG(T->LRegistos, Mostrar_Registo);
     printf("\n");
+
     clock_t end = clock();
+    t = time(NULL);
+    tm = *localtime(&t);
+    char* endTime = malloc(sizeof(char) * 20);
+    sprintf(endTime,"%d-%02d-%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
     double time = (double)(end - init) / CLOCKS_PER_SEC;
+    FILE *fp;
+    fp = fopen("runTimes.csv", "a");
+    fprintf(fp, "%s;%s;%s;%f\n", __func__, startTime, endTime, time);
+    fclose(fp);
     printf("Tempo de Execucao: %f\n", time);
+    free(startTime);
+    free(endTime);
+    
 }
 
 // H)	Mostrar toda a base de dados, dever� mostrar todas as Tabelas da BDados.
 void Mostrar_BDados(BDadosCoupe *BD)
 {
-    clock_t init = clock();
     NOG *T = BD->LTabelas->Inicio;
     while (T)
     {
@@ -680,8 +696,28 @@ int DELETE_TABLE_DATA(TABELA *T)
 {
     if (!T)
         return INSUCESSO;
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    char* startTime = malloc(sizeof(char) * 20);
+    sprintf(startTime,"%d-%02d-%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+    clock_t init = clock();
+
     DestruirLG(T->LRegistos, Destruir_Registo);
     T->LRegistos = CriarLG();
+
+    clock_t end = clock();
+    t = time(NULL);
+    tm = *localtime(&t);
+    char* endTime = malloc(sizeof(char) * 20);
+    sprintf(endTime,"%d-%02d-%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+    double time = (double)(end - init) / CLOCKS_PER_SEC;
+    FILE *fp;
+    fp = fopen("runTimes.csv", "a");
+    fprintf(fp, "%s;%s;%s;%f\n", __func__, startTime, endTime, time);
+    fclose(fp);
+    printf("Tempo de Execucao: %f\n", time);
+    free(startTime);
+    free(endTime);
 
     return SUCESSO;
 }
@@ -700,6 +736,12 @@ int DROP_TABLE(BDadosCoupe *BD, char *nome_tabela)
     if (!BD || !nome_tabela)
         return INSUCESSO;
 
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    char* startTime = malloc(sizeof(char) * 20);
+    sprintf(startTime,"%d-%02d-%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+    clock_t init = clock();
+
     TABELA *T = Pesquisar_Tabela(BD, nome_tabela);
 
     if (!T)
@@ -710,6 +752,20 @@ int DROP_TABLE(BDadosCoupe *BD, char *nome_tabela)
 
     RemoveLG(BD->LTabelas, T, Compara_Nome_Tabela);
     // free(T);
+
+    clock_t end = clock();
+    t = time(NULL);
+    tm = *localtime(&t);
+    char* endTime = malloc(sizeof(char) * 20);
+    sprintf(endTime,"%d-%02d-%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+    double time = (double)(end - init) / CLOCKS_PER_SEC;
+    FILE *fp;
+    fp = fopen("runTimes.csv", "a");
+    fprintf(fp, "%s;%s;%s;%f\n", __func__, startTime, endTime, time);
+    fclose(fp);
+    printf("Tempo de Execucao: %f\n", time);
+    free(startTime);
+    free(endTime);
 
     return SUCESSO;
 }
@@ -724,6 +780,12 @@ int SELECT(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
 {
     if (!BD || !_tabela || !f_condicao || !nome_campo || !valor_comparacao)
         return INSUCESSO;
+    
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    char* startTime = malloc(sizeof(char) * 20);
+    sprintf(startTime,"%d-%02d-%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+    clock_t init = clock();
 
     TABELA *T = Pesquisar_Tabela(BD, _tabela);
 
@@ -801,6 +863,20 @@ int SELECT(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
         NR = NR->Prox;
     }
 
+    clock_t end = clock();
+    t = time(NULL);
+    tm = *localtime(&t);
+    char* endTime = malloc(sizeof(char) * 20);
+    sprintf(endTime,"%d-%02d-%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+    double time = (double)(end - init) / CLOCKS_PER_SEC;
+    FILE *fp;
+    fp = fopen("runTimes.csv", "a");
+    fprintf(fp, "%s;%s;%s;%f\n", __func__, startTime, endTime, time);
+    fclose(fp);
+    printf("Tempo de Execucao: %f\n", time);
+    free(startTime);
+    free(endTime);
+
     return count;
 }
 
@@ -809,6 +885,12 @@ int DELETE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
 {
     if (!BD || !_tabela || !f_condicao || !nome_campo || !valor_comparacao)
         return INSUCESSO;
+
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    char* startTime = malloc(sizeof(char) * 20);
+    sprintf(startTime,"%d-%02d-%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+    clock_t init = clock();
 
     TABELA *T = Pesquisar_Tabela(BD, _tabela);
 
@@ -885,11 +967,47 @@ int DELETE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
         NR = NR->Prox;
     }
 
+    clock_t end = clock();
+    t = time(NULL);
+    tm = *localtime(&t);
+    char* endTime = malloc(sizeof(char) * 20);
+    sprintf(endTime,"%d-%02d-%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+    double time = (double)(end - init) / CLOCKS_PER_SEC;
+    FILE *fp;
+    fp = fopen("runTimes.csv", "a");
+    fprintf(fp, "%s;%s;%s;%f\n", __func__, startTime, endTime, time);
+    fclose(fp);
+    printf("Tempo de Execucao: %f\n", time);
+    free(startTime);
+    free(endTime);
+
     return count;
 }
 
 // P)	Atualizar todos os registos da tabela onde o Campo � dado, que obede�am a uma dada condi��o, a fun��o deve retornar o n�mero de registos que foram atualizados.
 int UPDATE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), char *campo_comp, char *valor_campo_comp, char *nome_campo_update, char *valor_campo_update)
 {
+
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    char* startTime = malloc(sizeof(char) * 20);
+    sprintf(startTime,"%d-%02d-%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+    clock_t init = clock();
+
+
+    clock_t end = clock();
+    t = time(NULL);
+    tm = *localtime(&t);
+    char* endTime = malloc(sizeof(char) * 20);
+    sprintf(endTime,"%d-%02d-%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+    double time = (double)(end - init) / CLOCKS_PER_SEC;
+    FILE *fp;
+    fp = fopen("runTimes.csv", "a");
+    fprintf(fp, "%s;%s;%s;%f\n", __func__, startTime, endTime, time);
+    fclose(fp);
+    printf("Tempo de Execucao: %f\n", time);
+    free(startTime);
+    free(endTime);
+
     return SUCESSO;
 }
