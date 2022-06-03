@@ -411,34 +411,83 @@ void EntrarBaseDados(ListaGenerica *BDS)
                 askToContinue = true;
                 break;
             case 7:
-                arrayOpcoes = listanometabelas(SelectedBD);
-                option = drawMenu(arrayOpcoes, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
-                for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++)
-                    free(arrayOpcoes[i]); // free(arrayOpcoes);
-
-                T = GetSelectedTableByIndex(SelectedBD, option);
-                nomeTabela = T->NOME_TABELA;
                 system("cls");
+                printf("\n  \033[4mSELECT\033[0m\n\n");
+                if (SelectedBD->LTabelas->Inicio == NULL)
+                {
+                    printf("\n  \033[31mNao existem tabelas!\033[0m\n");
+                    askToContinue = true;
+                }
+                else
+                {
+                    arrayOpcoes = listanometabelas(SelectedBD);
+                    option = drawMenu(arrayOpcoes, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
+                    for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++)
+                        free(arrayOpcoes[i]); // free(arrayOpcoes);
 
-                lncampos = listanomecampos(T);
-                option = drawMenu(lncampos, T->LCampos->NEL, "Escolha um Campo");
-                for (size_t i = 0; i < T->LCampos->NEL; i++)
-                    free(lncampos[i]);
+                    T = GetSelectedTableByIndex(SelectedBD, option);
+                    nomeTabela = T->NOME_TABELA;
+                    system("cls");
 
-                campoSelecionado = GetSelectedCampoByIndex(T, option);
+                    lncampos = listanomecampos(T);
+                    option = drawMenu(lncampos, T->LCampos->NEL, "Escolha um Campo");
+                    for (size_t i = 0; i < T->LCampos->NEL; i++)
+                        free(lncampos[i]);
 
-                system("cls");
+                    campoSelecionado = GetSelectedCampoByIndex(T, option);
 
-                printf("\n  \033[4mValor a pesquisar\033[0m: ");
-                scanf("%s", valorPesquisar);
+                    system("cls");
 
-                SELECT(SelectedBD, nomeTabela, Compare, campoSelecionado->NOME_CAMPO, valorPesquisar);
+                    printf("\n  \033[4mValor a pesquisar\033[0m: ");
+                    scanf("%s", valorPesquisar);
 
+                    SELECT(SelectedBD, nomeTabela, Compare, campoSelecionado->NOME_CAMPO, valorPesquisar);
+                }
+                askToContinue = true;
                 break;
 
             case 8:
+                system("cls");
+                printf("\n  \033[4mDELETE\033[0m\n\n");
+                if (SelectedBD->LTabelas->Inicio == NULL)
+                {
+                    printf("\n  \033[31mNao existem tabelas!\033[0m\n");
+                    askToContinue = true;
+                }
+                else
+                {
+                    arrayOpcoes = listanometabelas(SelectedBD);
+                    option = drawMenu(arrayOpcoes, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
+                    for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++)
+                        free(arrayOpcoes[i]); // free(arrayOpcoes);
+
+                    T = GetSelectedTableByIndex(SelectedBD, option);
+                    nomeTabela = T->NOME_TABELA;
+                    system("cls");
+
+                    lncampos = listanomecampos(T);
+                    option = drawMenu(lncampos, T->LCampos->NEL, "Escolha um Campo");
+                    for (size_t i = 0; i < T->LCampos->NEL; i++)
+                        free(lncampos[i]);
+
+                    campoSelecionado = GetSelectedCampoByIndex(T, option);
+
+                    system("cls");
+
+                }
                 break;
             case 9:
+                system("cls");
+                printf("\n  \033[4mUPDATE\033[0m\n\n");
+                if (SelectedBD->LTabelas->Inicio == NULL)
+                {
+                    printf("\n  \033[31mNao existem tabelas!\033[0m\n");
+                    askToContinue = true;
+                }
+                else
+                {
+
+                }
                 break;
 
             case 10:
