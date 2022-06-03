@@ -57,6 +57,21 @@ int Add_Campo_Tabela(TABELA *T, char *nome_campo, char *tipo_campo)
     strcpy(C->NOME_CAMPO, nome_campo);
     strcpy(C->TIPO, tipo_campo);
     int res = AddFimLG(T->LCampos, C);
+    if(T->LRegistos->NEL > 0)
+    {
+        NOG* NR = T->LRegistos->Inicio;
+
+        while (NR)
+        {
+            REGISTO* R = (REGISTO*) NR->Info;
+
+            AddFimLG(R->LValores, " ");
+
+            NR = NR->Prox;
+        }
+        
+    }
+
     return res;
 }
 // D)	Adicionar dados(registos) a uma tabela, os dados s�o dados numa string onde o separador � �;�m ex: Add_Valores_Tabela(T, �123;Joao;965654449�)
@@ -754,7 +769,7 @@ int DROP_TABLE(BDadosCoupe *BD, char *nome_tabela)
     DestruirLG(T->LRegistos, Destruir_Registo);
 
     RemoveLG(BD->LTabelas, T, Compara_Nome_Tabela);
-    // free(T);
+    free(T);
 
     clock_t end = clock();
     t = time(NULL);
@@ -990,7 +1005,6 @@ int DELETE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
 // P)	Atualizar todos os registos da tabela onde o Campo � dado, que obede�am a uma dada condi��o, a fun��o deve retornar o n�mero de registos que foram atualizados.
 int UPDATE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), char *campo_comp, char *valor_campo_comp, char *nome_campo_update, char *valor_campo_update)
 {
-
     time_t t = time(NULL);
     struct tm tm = *localtime(&t);
     char* startTime = malloc(sizeof(char) * 20);
