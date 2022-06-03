@@ -60,6 +60,13 @@ char **listabasedados(ListaGenerica *X)
     }
     return listaBDs;
 }
+int Compara_Nome_BD(void *t1, void *t2)
+{
+    BDadosCoupe *T1 = (BDadosCoupe *)t1;
+    BDadosCoupe *T2 = (BDadosCoupe *)t2;
+
+    return strcmp(T1->NOME_BDADOS, T2->NOME_BDADOS);
+}
 char **listanometabelas(BDadosCoupe *BD)
 {
     NOG *aux = BD->LTabelas->Inicio;
@@ -123,13 +130,13 @@ void EntrarBaseDados(ListaGenerica *BDS)
 {
     char *submenu[] = {"Criar Tabela",
                        "Adicionar dados a uma tabela",
+                       "Adicionar campos a uma tabela",
                        "Mostrar Todas as Tabelas",
+                       "Mostar uma tabela",
                        "Apagar Tabela",
                        "SELECT",
                        "UPDATE",
                        "DELETE",
-                       "Adicionar campos a uma tabela",
-                       "Mostar uma tabela",
                        "\033[31mVoltar\033[0m"};
 
     char *nomeCampo = (char *)malloc(sizeof(char) * 50);
@@ -149,14 +156,16 @@ void EntrarBaseDados(ListaGenerica *BDS)
 
     if (BDS->Inicio == NULL)
     {
-        printf("Não tem uma Base de dados\n");
+        system("cls");
+        printf("\n  \033[4mEntrar Base Dados\033[0m\n\n");
+        // printf color red
+        printf("  \033[31mNao existem Base de Dados!\033[0m\n");
         system("pause");
         askToContinue = false;
     }
     else
     {
         system("cls");
-
         arrayOpcoes = listabasedados(BDS);
         option = drawMenu(arrayOpcoes, BDS->NEL, "Escolha a Base de Dados");
         for (size_t i = 0; i < BDS->NEL; i++)
@@ -261,52 +270,6 @@ void EntrarBaseDados(ListaGenerica *BDS)
                 break;
             case 3:
                 system("cls");
-                printf("\n  \033[4mListar todas as tabelas de uma Base de Dados\033[0m\n\n");
-                printf("  Base de Dados: %s\n", SelectedBD->NOME_BDADOS);
-                if (SelectedBD->LTabelas->Inicio == NULL)
-                    printf("\n  \033[31mNao existem tabelas!\033[0m\n");
-                else
-                {
-                    Mostrar_BDados(SelectedBD);
-                }
-                askToContinue = true;
-                break;
-
-            case 4:
-                option = 0;
-                system("cls");
-                printf("\n  \033[4mApagar uma tabela de uma Base de Dados\033[0m\n\n");
-                printf("  Base de Dados: %s\n", SelectedBD->NOME_BDADOS);
-                if (SelectedBD->LTabelas->Inicio == NULL)
-                    printf("\n  \033[31mNao existem tabelas!\033[0m\n");
-                else
-                {
-                    arrayOpcoes = listanometabelas(SelectedBD);
-                    option = drawMenu(arrayOpcoes, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
-                    for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++)
-                        free(arrayOpcoes[i]); // free(arrayOpcoes);
-
-                    T = SelectedTable(SelectedBD, option);
-                    nomeTabela = T->NOME_TABELA;
-                    system("cls");
-                    printf("\n  \033[4mApagar uma tabela de uma Base de Dados\033[0m\n\n");
-                    printf("  Base de Dados: %s\n", SelectedBD->NOME_BDADOS);
-                    if (DROP_TABLE(SelectedBD, nomeTabela) == 1)
-                        printf("\n  \033[32mTabela removida %s com sucesso!\033[0m\n", nomeTabela);
-                    else
-                        printf("\n  \033[31mErro ao remover %s tabela!\033[0m\n", nomeTabela);
-                }
-                free(nomeTabela);
-                askToContinue = true;
-                break;
-            case 5:
-                break;
-            case 6:
-                break;
-            case 7:
-                break;
-            case 8:
-                system("cls");
                 printf("\n  \033[4mAdicionar campos a uma tabela\033[0m\n\n");
                 printf("  Base de Dados:%s \n\n", SelectedBD->NOME_BDADOS);
                 if (SelectedBD->LTabelas->Inicio == NULL)
@@ -364,7 +327,19 @@ void EntrarBaseDados(ListaGenerica *BDS)
                 askToContinue = true;
 
                 break;
-            case 9:
+            case 4:
+                system("cls");
+                printf("\n  \033[4mListar todas as tabelas de uma Base de Dados\033[0m\n\n");
+                printf("  Base de Dados: %s\n", SelectedBD->NOME_BDADOS);
+                if (SelectedBD->LTabelas->Inicio == NULL)
+                    printf("\n  \033[31mNao existem tabelas!\033[0m\n");
+                else
+                {
+                    Mostrar_BDados(SelectedBD);
+                }
+                askToContinue = true;
+                break;
+            case 5:
                 system("cls");
                 printf("\n  \033[4mMostar uma tabela\033[0m\n\n");
                 printf("  Base de Dados: %s\n\n", SelectedBD->NOME_BDADOS);
@@ -386,6 +361,40 @@ void EntrarBaseDados(ListaGenerica *BDS)
 
                 askToContinue = true;
                 break;
+            case 6:
+                option = 0;
+                system("cls");
+                printf("\n  \033[4mApagar uma tabela de uma Base de Dados\033[0m\n\n");
+                printf("  Base de Dados: %s\n", SelectedBD->NOME_BDADOS);
+                if (SelectedBD->LTabelas->Inicio == NULL)
+                    printf("\n  \033[31mNao existem tabelas!\033[0m\n");
+                else
+                {
+                    arrayOpcoes = listanometabelas(SelectedBD);
+                    option = drawMenu(arrayOpcoes, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
+                    for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++)
+                        free(arrayOpcoes[i]); // free(arrayOpcoes);
+
+                    T = SelectedTable(SelectedBD, option);
+                    nomeTabela = T->NOME_TABELA;
+                    system("cls");
+                    printf("\n  \033[4mApagar uma tabela de uma Base de Dados\033[0m\n\n");
+                    printf("  Base de Dados: %s\n", SelectedBD->NOME_BDADOS);
+                    if (DROP_TABLE(SelectedBD, nomeTabela) == 1)
+                        printf("\n  \033[32mTabela removida %s com sucesso!\033[0m\n", nomeTabela);
+                    else
+                        printf("\n  \033[31mErro ao remover %s tabela!\033[0m\n", nomeTabela);
+                }
+                free(nomeTabela);
+                askToContinue = true;
+                break;
+            case 7:
+                break;
+            case 8:
+                break;
+            case 9:
+                break;
+
             case 10:
                 exitMenu = true;
                 break;
@@ -444,7 +453,7 @@ void ImportarBaseDados(ListaGenerica *BDS)
             free(ImportBD);
             system("pause");
         }
-    break;
+        break;
 
     case 2:
         system("cls");
@@ -490,10 +499,10 @@ void ExportarBaseDados(ListaGenerica *BDS)
     char **arrayOpcoes;
     int option = 0;
     int op = -1;
-    printf("\n  \033[4mExportar Base de Dados\033[0m\n\n");
+    printf("\n  \033[4mExportar Base de Dados\033[0m\n");
     if (BDS->Inicio == NULL)
     {
-        printf("\n  \033[31mNao existem base de dados!\033[0m\n");
+        printf("\n  \033[31mNao existem base de dados para exportar!\033[0m\n");
         system("pause");
         return;
     }
@@ -508,13 +517,17 @@ void ExportarBaseDados(ListaGenerica *BDS)
         switch (op)
         {
         case 1:
+            system("cls");
+            printf("\n  \033[4mExportar Base de Dados(EXCEL)\033[0m\n");
             if (SelectedBD->LTabelas->Inicio == NULL)
             {
+
                 printf("\n  \033[31mNao existem tabelas na Base Dados %s para exportar!\033[0m\n", SelectedBD->NOME_BDADOS);
                 system("pause");
             }
             else
             {
+
                 if (Exportar_BDados_Excel(SelectedBD) == SUCESSO)
                 {
                     printf("\n  \033[32mBase de Dados %s exportada com sucesso!\033[0m\n", SelectedBD->NOME_BDADOS);
@@ -529,8 +542,11 @@ void ExportarBaseDados(ListaGenerica *BDS)
 
             break;
         case 2:
+            system("cls");
+            printf("\n  \033[4mExportar Base de Dados(BIN)\033[0m\n");
             if (SelectedBD->LTabelas->Inicio == NULL)
             {
+
                 printf("\n  \033[31mNao existem tabelas na Base Dados %s para exportar!\033[0m\n", SelectedBD->NOME_BDADOS);
                 system("pause");
             }
@@ -556,6 +572,41 @@ void ExportarBaseDados(ListaGenerica *BDS)
         }
     }
     free(fich_name);
+}
+void ApagarBaseDados(ListaGenerica *BDS)
+{
+    BDadosCoupe *SelectedBD = NULL;
+    char **arrayOpcoes;
+    int option = 0;
+    int op = -1;
+    system("cls");
+    printf("\n  \033[4mApagar Base de Dados\033[0m\n");
+    if (BDS->Inicio == NULL)
+    {
+        printf("\n  \033[31mNao existem  Base Dados para apagar!\033[0m\n");
+        system("pause");
+    }
+    else
+    {
+        arrayOpcoes = listabasedados(BDS);
+        option = drawMenu(arrayOpcoes, BDS->NEL, "Escolha a Base de Dados");
+        for (size_t i = 0; i < BDS->NEL; i++)
+            free(arrayOpcoes[i]);
+        SelectedBD = SelectBDCoup(BDS, option);
+        system("cls");
+        printf("\n  \033[4mApagar Base de Dados\033[0m\n\n");
+        Destruir_BDados(SelectedBD);
+        if (RemoveLG(BDS, SelectedBD, Compara_Nome_BD) == SUCESSO)
+        {
+            printf("\n  \033[32mBase de Dados %s apagada com sucesso!\033[0m\n", SelectedBD->NOME_BDADOS);
+            system("pause");
+        }
+        else
+        {
+            printf("\n  \033[31mErro ao apagar base de dados %s!\033[0m\n", SelectedBD->NOME_BDADOS);
+            system("pause");
+        }
+    }
 }
 int main()
 {
@@ -603,6 +654,7 @@ int main()
                     "Entrar numa Base de Dados",
                     "Importar Base de Dados",
                     "Exportar Base de Dados",
+                    "Apagar uma Base de Dados",
                     "\033[31mSAIR\033[0m"};
 
     bool exitMenu = false;
@@ -617,7 +669,7 @@ int main()
     do
     {
         askToContinue = true;
-        op = drawMenu(menu, 5, "Menu Principal");
+        op = drawMenu(menu, 6, "Menu Principal");
         switch (op)
         {
         case 1:
@@ -641,6 +693,9 @@ int main()
             askToContinue = false;
             break;
         case 5:
+            ApagarBaseDados(BDS);
+            break;
+        case 6:
             exitMenu = true;
             break;
 
