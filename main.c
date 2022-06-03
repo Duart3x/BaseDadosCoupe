@@ -258,8 +258,7 @@ void EntrarBaseDados(ListaGenerica *BDS)
 
                     break;
                 case 2:
-                    T = GetSelectedTableByIndex(SelectedBD, option);
-                    lncampos = listaNomeCampos(T);
+                   
                     system("cls");
                     printf("\n  \033[4mAdicionar dados a uma tabela\033[0m\n\n");
                     printf("  Base de Dados:%s \n\n", SelectedBD->NOME_BDADOS);
@@ -327,7 +326,6 @@ void EntrarBaseDados(ListaGenerica *BDS)
                             scanf("%s", nomeCampo);
                             printf("  Tipo (INT, STRING, CHAR, FLOAT): ");
                             scanf("%s", tipoCampo);
-                            strToUpper(nomeCampo);
                             strToUpper(tipoCampo);
                             if (strcmp(tipoCampo, "INT") != 0 && strcmp(tipoCampo, "STRING") != 0 && strcmp(tipoCampo, "CHAR") != 0 && strcmp(tipoCampo, "FLOAT") != 0)
                             {
@@ -336,7 +334,7 @@ void EntrarBaseDados(ListaGenerica *BDS)
                             }
                             else
                             {
-                                if (Add_Campo_Tabela(T, nomeCampo, tipoCampo) == 1)
+                                if (Add_Campo_Tabela(T, nomeCampo, tipoCampo) == SUCESSO)
                                 {
                                     system("cls");
                                     printf("\n  \033[32mCampo(s) adicionado(s) com sucesso!\033[0m\n");
@@ -382,12 +380,6 @@ void EntrarBaseDados(ListaGenerica *BDS)
                     printf("\n  \033[31mNao existem tabelas!\033[0m\n");
                 else
                 {
-                    arrayOpcoes = listanometabelas(SelectedBD);
-                    option = drawMenu(arrayOpcoes, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
-                    for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++)
-                        free(arrayOpcoes[i]);
-                    // free(arrayOpcoes);
-                    T = GetSelectedTableByIndex(SelectedBD, option);
                     system("cls");
                     printf("\n  \033[4mMostar uma tabela\033[0m\n\n");
                     printf("  Base de Dados: %s\n\n", SelectedBD->NOME_BDADOS);
@@ -428,12 +420,13 @@ void EntrarBaseDados(ListaGenerica *BDS)
                         system("cls");
                         printf("\n  \033[4mApagar uma tabela de uma Base de Dados\033[0m\n\n");
                         printf("  Base de Dados: %s\n", SelectedBD->NOME_BDADOS);
-                        if (DROP_TABLE(SelectedBD, T->NOME_TABELA) == 1)
-                            printf("\n  \033[32mTabela removida %s com sucesso!\033[0m\n", T->NOME_TABELA);
+                        strcpy(nomeTabela, T->NOME_TABELA);
+                        if (DROP_TABLE(SelectedBD, T->NOME_TABELA) == SUCESSO)
+                            printf("\n  \033[32mTabela %s removida com sucesso!\033[0m\n", nomeTabela);
                         else
-                            printf("\n  \033[31mErro ao remover %s tabela!\033[0m\n", T->NOME_TABELA);
+                            printf("\n  \033[31mErro ao remover %s tabela!\033[0m\n", nomeTabela);
                     }
-                    free(nomeTabela);
+                    
                     askToContinue = true;
                     break;
 
@@ -494,7 +487,7 @@ void EntrarBaseDados(ListaGenerica *BDS)
                 }
                 else
                 {
-                    arrayOpcoes = listanometabelas(SelectedBD);
+                    arrayOpcoes = listaNomeTabelas(SelectedBD);
                     option = drawMenu(arrayOpcoes, SelectedBD->LTabelas->NEL, "Escolha a Tabela");
                     for (size_t i = 0; i < SelectedBD->LTabelas->NEL; i++)
                         free(arrayOpcoes[i]); // free(arrayOpcoes);
@@ -503,7 +496,7 @@ void EntrarBaseDados(ListaGenerica *BDS)
                     
                     system("cls");
 
-                    lncampos = listanomecampos(T);
+                    lncampos = listaNomeCampos(T);
                     option = drawMenu(lncampos, T->LCampos->NEL, "Escolha um Campo");
                     for (size_t i = 0; i < T->LCampos->NEL; i++)
                         free(lncampos[i]);
@@ -532,7 +525,7 @@ void EntrarBaseDados(ListaGenerica *BDS)
             }
         } while (exitMenu == false);
     }
-    free(nomeCampo);
+    
     free(dadosconcat);
     free(dados);
     free(nomeTabela);
@@ -705,12 +698,13 @@ void ApagarBaseDados(ListaGenerica *BDS)
     char **arrayOpcoes;
     int option = 0;
     int op = -1;
+    char* bdName = NULL;
     system("cls");
     printf("\n  \033[4mApagar Base de Dados\033[0m\n");
     if (BDS->Inicio == NULL)
     {
         printf("\n  \033[31mNao existem  Base Dados para apagar!\033[0m\n");
-        system("pause");
+
     }
     else
     {
@@ -721,19 +715,20 @@ void ApagarBaseDados(ListaGenerica *BDS)
         if(option == -1)
             return;
         SelectedBD = GetSelectBDCoupByIndex(BDS, option);
+        bdName = malloc(sizeof(char) * strlen(SelectedBD->NOME_BDADOS) + 1);
+        strcpy(bdName, SelectedBD->NOME_BDADOS);
         system("cls");
         printf("\n  \033[4mApagar Base de Dados\033[0m\n\n");
         Destruir_BDados(SelectedBD);
         if (RemoveLG(BDS, SelectedBD, Compara_Nome_BD) == SUCESSO)
         {
-            printf("\n  \033[32mBase de Dados %s apagada com sucesso!\033[0m\n", SelectedBD->NOME_BDADOS);
-            system("pause");
+            printf("\n  \033[32mBase de Dados %s apagada com sucesso!\033[0m\n", bdName);
         }
         else
         {
-            printf("\n  \033[31mErro ao apagar base de dados %s!\033[0m\n", SelectedBD->NOME_BDADOS);
-            system("pause");
+            printf("\n  \033[31mErro ao apagar base de dados %s!\033[0m\n", bdName);
         }
+        free(bdName);
     }
 }
 int main()
