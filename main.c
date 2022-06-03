@@ -412,7 +412,7 @@ void EntrarBaseDados(ListaGenerica *BDS)
                 break;
             case 7:
                 system("cls");
-                printf("\n  \033[4mSELECT\033[0m\n\n");
+                printf("\n  \033[4mSELECT\033[0m\n");
                 if (SelectedBD->LTabelas->Inicio == NULL)
                 {
                     printf("\n  \033[31mNao existem tabelas!\033[0m\n");
@@ -448,7 +448,7 @@ void EntrarBaseDados(ListaGenerica *BDS)
 
             case 8:
                 system("cls");
-                printf("\n  \033[4mDELETE\033[0m\n\n");
+                printf("\n  \033[4mDELETE\033[0m\n");
                 if (SelectedBD->LTabelas->Inicio == NULL)
                 {
                     printf("\n  \033[31mNao existem tabelas!\033[0m\n");
@@ -478,7 +478,7 @@ void EntrarBaseDados(ListaGenerica *BDS)
                 break;
             case 9:
                 system("cls");
-                printf("\n  \033[4mUPDATE\033[0m\n\n");
+                printf("\n  \033[4mUPDATE\033[0m\n");
                 if (SelectedBD->LTabelas->Inicio == NULL)
                 {
                     printf("\n  \033[31mNao existem tabelas!\033[0m\n");
