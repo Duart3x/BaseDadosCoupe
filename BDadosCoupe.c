@@ -939,7 +939,6 @@ int DELETE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
     aux = 0;
     int count = 0;
     int found = 0;
-    int removeIndex = 0;
 
     printf("  QUERY: DELETE * FROM %s WHERE %s = %s\n  Resultado(s):\n\n", _tabela, nome_campo, valor_comparacao);
 
@@ -972,7 +971,6 @@ int DELETE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
 
         if (!found)
         {
-            removeIndex++;
             NR = NR->Prox;
             continue;
         }
