@@ -917,6 +917,7 @@ int DELETE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
 
     NOG *NR = T->LRegistos->Inicio;
     NOG *NC = T->LCampos->Inicio;
+    NOG* NRCopy = T->LRegistos->Inicio;
 
     int campoIndex = -1;
     int aux = 0;
@@ -976,10 +977,21 @@ int DELETE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
             continue;
         }
 
-        NR = NR->Prox;
-        NV = R->LValores->Inicio;
+        if (NR->Ant)
+            NR->Ant->Prox = NR->Prox;
+        else
+            T->LRegistos->Inicio = NR->Prox;
+        if (NR->Prox)
+            NR->Prox->Ant = NR->Ant;
+        else
+            T->LRegistos->Fim = NR->Ant;
+        
+        Destruir_Registo(NR->Info);
+        T->LRegistos->NEL--;
+        NRCopy = NR->Prox;
+        free(NR);
 
-        RemoveLG_Index(T->LRegistos, removeIndex, Destruir_Registo);
+        NR = NRCopy;
 
         found = 0;
     }

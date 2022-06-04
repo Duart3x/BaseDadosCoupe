@@ -3,14 +3,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include "ListaGenerica.h"
+
 typedef struct
 {
     char NOME_BDADOS[50];
     char VERSAO_BDADOS[50];
     ListaGenerica *LTabelas;
-    //ListaTabelas *LTabelas;
 }BDadosCoupe;
 
 typedef struct
@@ -18,8 +17,6 @@ typedef struct
     char NOME_TABELA[50];
     ListaGenerica *LCampos;
     ListaGenerica *LRegistos;
-    //ListaCampos *LCampos;
-    //ListaRegistos *LRegistos;
 }TABELA;
 
 typedef struct
